@@ -2,24 +2,23 @@ import graphene
 
 from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
+from graphene_mongo.fields import MongoengineConnectionField
 
 from mongoengine import Document
 from mongoengine.base.fields import ObjectIdField
-from mongoengine.fields import DateTimeField, FloatField, StringField
+from mongoengine.fields import StringField
+
+from middlewares.permissions import PermissionsType, permissions_checker
 
 # Models
 
 
 class DefaultProductModel(Document):
     meta = {"collection": "default_products"}
-    name = StringField()
+    product_name = StringField()
     icon = StringField()
-    description = StringField()
-    notes = StringField()
-    expiration_date = DateTimeField()
-    count = FloatField()
-    default_count = FloatField()
-    priceId = ObjectIdField()
+    price_id = ObjectIdField()
+    custom_columns = StringField()
 
 # Types
 
@@ -35,33 +34,41 @@ class DefaultProduct(MongoengineObjectType):
 
 class DefaultProductInput(graphene.InputObjectType):
     id = graphene.ID()
-    name = graphene.String(required=True)
+    product_name = graphene.String(required=True)
     icon = graphene.String()
-    description = graphene.String()
-    notes = graphene.String()
-    expiration_date = graphene.DateTime()
-    count = graphene.Float()
-    default_count = graphene.Float()
-    priceId = graphene.ID()
+    price_id = graphene.ID()
+    custom_columns = graphene.JSONString()
 
 
 class CreateDefaultProductMutation(graphene.Mutation):
     defaultProduct = graphene.Field(DefaultProduct)
+    created = graphene.Boolean()
 
     class Arguments:
         default_product_details = DefaultProductInput(required=True)
 
-    def mutate(parent, default_product_details=None):
+    def mutate(parent, info, default_product_details=None):
         default_product = DefaultProductModel(
-            name=default_product_details.name,
+            product_name=default_product_details.product_name,
             icon=default_product_details.icon,
-            description=default_product_details.description,
-            notes=default_product_details.notes,
-            expiration_date=default_product_details.expiration_date,
-            count=default_product_details.count,
-            default_count=default_product_details.default_count,
-            priceId=default_product_details.priceId
+            price_id=default_product_details.price_id,
+            custom_columns=default_product_details.custom_columns
         )
         default_product.save()
 
-        return CreateDefaultProductMutation(defaultProduct=default_product)
+        return CreateDefaultProductMutation(defaultProduct=default_product, created=True)
+
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="admin"))
+
+# Resolvers
+
+
+class DefaultProductsListsResolver(graphene.ObjectType):
+    default_products = MongoengineConnectionField(DefaultProduct)
+
+    def resolve_default_products(parent, info):
+        MongoengineConnectionField(DefaultProduct)
+
+    resolve_default_products = permissions_checker(
+        resolve_default_products, PermissionsType(allow_any="user"))

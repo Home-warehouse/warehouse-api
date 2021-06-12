@@ -1,12 +1,15 @@
 import graphene
 from graphene.relay import Node
 
-from graphene_mongo import MongoengineConnectionField
 from mongoengine import connect
 from pymongo.errors import ConnectionFailure
+from models.default_product import CreateDefaultProductMutation, DefaultProductsListsResolver
+
+# Models
 
 from models.location import (
     CreateLocationMutation,
+    LocationsListsResolver,
     UpdateLocationMutation,
     DeleteLocationMutation,
     Location
@@ -15,20 +18,25 @@ from models.product import (
     CreateProductMutation,
     UpdateProductMutation,
     DeleteProductMutation,
+    ProductsListsResolver,
     Product
 )
 from models.product_price import (
     CreateProductPriceMutation,
+    DefaultPricesListsResolver,
     UpdateProductPriceMutation,
     DeleteProductPriceMutation,
     ProductPrice
 )
 from models.account import (
+    AccountssListsResolver,
     CreateAccountMutation,
     UpdateAccountMutation,
     DeleteAccountMutation,
     Account
 )
+from resolvers.authentication import AuthenticationResolver
+
 
 # Connect with database
 try:
@@ -52,6 +60,8 @@ class Mutation(graphene.ObjectType):
     modify_product = UpdateProductMutation.Field()
     delete_product = DeleteProductMutation.Field()
 
+    create_default_product = CreateDefaultProductMutation.Field()
+
     create_product_price = CreateProductPriceMutation.Field()
     modify_product_price = UpdateProductPriceMutation.Field()
     delete_product_price = DeleteProductPriceMutation.Field()
@@ -61,19 +71,21 @@ class Mutation(graphene.ObjectType):
     delete_account = DeleteAccountMutation.Field()
 
 
-class Query(graphene.ObjectType):
+class Query(
+    AuthenticationResolver,
+    AccountssListsResolver,
+    LocationsListsResolver,
+    ProductsListsResolver,
+    DefaultPricesListsResolver,
+    DefaultProductsListsResolver,
+    graphene.ObjectType
+    ):
+    pass
+
     node = Node.Field()
-
-    locations_list = MongoengineConnectionField(Location)
     location = graphene.Field(Location)
-
-    products_list = MongoengineConnectionField(Product)
     product = graphene.Field(Product)
-
-    products_prices_list = MongoengineConnectionField(ProductPrice)
     product_price = graphene.Field(ProductPrice)
-
-    accounts_list = MongoengineConnectionField(Account)
     account = graphene.Field(Account)
 
 
@@ -82,4 +94,7 @@ schema = graphene.Schema(
     mutation=Mutation,
     types=[
         Location,
-        Product])
+        Product,
+        ProductPrice,
+        Account,
+    ])

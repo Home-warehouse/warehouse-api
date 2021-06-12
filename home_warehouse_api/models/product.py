@@ -2,11 +2,14 @@ import graphene
 
 from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
+from graphene_mongo.fields import MongoengineConnectionField
 from graphql_relay.node.node import from_global_id
 
 from mongoengine import Document
 from mongoengine.base.fields import ObjectIdField
-from mongoengine.fields import DateTimeField, FloatField, StringField
+from mongoengine.fields import StringField
+
+from middlewares.permissions import PermissionsType, permissions_checker
 
 # Models
 
@@ -15,12 +18,8 @@ class ProductModel(Document):
     meta = {"collection": "products"}
     product_name = StringField()
     icon = StringField()
-    description = StringField()
-    notes = StringField()
-    expiration_date = DateTimeField()
-    count = FloatField()
-    default_count = FloatField()
-    priceId = ObjectIdField()
+    price_id = ObjectIdField()
+    custom_columns = StringField()
 
 
 # Types
@@ -39,12 +38,8 @@ class ProductInput(graphene.InputObjectType):
     id = graphene.ID()
     product_name = graphene.String(required=True)
     icon = graphene.String()
-    description = graphene.String()
-    notes = graphene.String()
-    expiration_date = graphene.DateTime()
-    count = graphene.Float()
-    default_count = graphene.Float()
-    priceId = graphene.ID()
+    price_id = graphene.ID()
+    custom_columns = graphene.JSONString()
 
 
 class CreateProductMutation(graphene.Mutation):
@@ -57,15 +52,14 @@ class CreateProductMutation(graphene.Mutation):
         product = ProductModel(
             product_name=product_details.product_name,
             icon=product_details.icon,
-            description=product_details.description,
-            notes=product_details.notes,
-            expiration_date=product_details.expiration_date,
-            count=product_details.count,
-            default_count=product_details.default_count,
-            priceId=product_details.priceId
+            price_id=product_details.price_id,
+            custom_columns=product_details.custom_columns
         )
         product.save()
         return CreateProductMutation(product=product)
+
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class UpdateProductMutation(graphene.Mutation):
@@ -86,6 +80,8 @@ class UpdateProductMutation(graphene.Mutation):
             product.update(**product_details)
             return UpdateProductMutation(product=product, modified=True)
         return UpdateProductMutation(product=id, modified=False)
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class DeleteProductMutation(graphene.Mutation):
@@ -104,3 +100,18 @@ class DeleteProductMutation(graphene.Mutation):
                 id=from_global_id(id)[1], deleted=True)
         return DeleteProductMutation(
             id=from_global_id(id)[1], deleted=False)
+
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
+
+# Resolvers
+
+
+class ProductsListsResolver(graphene.ObjectType):
+    products = MongoengineConnectionField(Product)
+
+    def resolve_products(parent, info):
+        MongoengineConnectionField(Product)
+
+    resolve_products = permissions_checker(
+        resolve_products, PermissionsType(allow_any="user"))

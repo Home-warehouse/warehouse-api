@@ -2,11 +2,14 @@ import graphene
 
 from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
+from graphene_mongo.fields import MongoengineConnectionField
 from graphql_relay.node.node import from_global_id
 
 from mongoengine import Document
 from mongoengine.base.fields import ObjectIdField
-from mongoengine.fields import StringField
+from mongoengine.fields import ListField, StringField
+
+from middlewares.permissions import PermissionsType, permissions_checker
 
 # Models
 
@@ -16,6 +19,7 @@ class LocationModel(Document):
     parent_id = ObjectIdField()
     location_name = StringField(required=True)
     description = StringField()
+    products = ListField(ObjectIdField())
 
 # Types
 
@@ -34,6 +38,7 @@ class LocationInput(graphene.InputObjectType):
     parent_id = graphene.ID()
     location_name = graphene.String()
     description = graphene.String()
+    products = graphene.List(graphene.ID)
 
 
 class CreateLocationMutation(graphene.Mutation):
@@ -51,6 +56,8 @@ class CreateLocationMutation(graphene.Mutation):
         location.save()
 
         return CreateLocationMutation(location=location)
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class UpdateLocationMutation(graphene.Mutation):
@@ -72,7 +79,8 @@ class UpdateLocationMutation(graphene.Mutation):
             return UpdateLocationMutation(location=location, modified=True)
         else:
             return UpdateLocationMutation(location=id, modified=False)
-
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 class DeleteLocationMutation(graphene.Mutation):
     id = graphene.ID(required=True)
@@ -90,3 +98,17 @@ class DeleteLocationMutation(graphene.Mutation):
                 id=from_global_id(id)[1], deleted=True)
         return DeleteLocationMutation(
             id=from_global_id(id)[1], deleted=False)
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
+
+# Resolvers
+
+
+class LocationsListsResolver(graphene.ObjectType):
+    locations = MongoengineConnectionField(Location)
+
+    def resolve_locations(parent, info):
+        MongoengineConnectionField(Location)
+
+    resolve_locations = permissions_checker(
+        resolve_locations, PermissionsType(allow_any="user"))

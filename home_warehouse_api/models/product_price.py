@@ -4,6 +4,7 @@ import graphene
 
 from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
+from graphene_mongo.fields import MongoengineConnectionField
 from graphql_relay.node.node import from_global_id
 
 from mongoengine import Document
@@ -15,6 +16,9 @@ from mongoengine.fields import (
     ListField,
     StringField
 )
+
+from middlewares.permissions import PermissionsType, permissions_checker
+from models.default_product import DefaultProduct
 
 # Models
 
@@ -74,7 +78,8 @@ class CreateProductPriceMutation(graphene.Mutation):
         productPrice.save()
 
         return CreateProductPriceMutation(productPrice=productPrice)
-
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 class UpdateProductPriceMutation(graphene.Mutation):
     id = graphene.String(required=True)
@@ -96,7 +101,8 @@ class UpdateProductPriceMutation(graphene.Mutation):
                 productPrice=product_price, modified=True)
         else:
             return UpdateProductPriceMutation(productPrice=id, modified=False)
-
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 class DeleteProductPriceMutation(graphene.Mutation):
     id = graphene.ID(required=True)
@@ -114,3 +120,18 @@ class DeleteProductPriceMutation(graphene.Mutation):
                 id=from_global_id(id)[1], deleted=True)
         return DeleteProductPriceMutation(
             id=from_global_id(id)[1], deleted=False)
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
+    
+# Resolvers
+
+
+class DefaultPricesListsResolver(graphene.ObjectType):
+    default_prices = MongoengineConnectionField(DefaultProduct)
+
+    def resolve_default_prices(parent, info):
+        MongoengineConnectionField(DefaultProduct)
+
+    resolve_default_prices = permissions_checker(
+        resolve_default_prices, PermissionsType(allow_any="user"))
+
