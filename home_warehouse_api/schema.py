@@ -1,9 +1,10 @@
+import os
+from dotenv import load_dotenv
 import graphene
 from graphene.relay import Node
 
 from mongoengine import connect
 from pymongo.errors import ConnectionFailure
-from models.default_product import CreateDefaultProductMutation, DefaultProductsListsResolver
 
 # Models
 
@@ -21,6 +22,11 @@ from models.product import (
     ProductsListsResolver,
     Product
 )
+from models.default_product import (
+    CreateDefaultProductMutation,
+    DefaultProduct,
+    DefaultProductsListsResolver
+)
 from models.product_price import (
     CreateProductPriceMutation,
     DefaultPricesListsResolver,
@@ -35,14 +41,15 @@ from models.account import (
     DeleteAccountMutation,
     Account
 )
-from resolvers.authentication import AuthenticationResolver
+from resolvers.authentication import AuthenticationResolvers
 
+load_dotenv()
 
 # Connect with database
 try:
     connection = connect(
         alias="default",
-        host="mongodb://127.0.0.1:27017/home-warehouse",
+        host=os.getenv("DB_URL"),
         serverSelectionTimeoutMS=3000
     )
     connection = connection.server_info()
@@ -72,21 +79,17 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(
-    AuthenticationResolver,
-    AccountssListsResolver,
-    LocationsListsResolver,
-    ProductsListsResolver,
     DefaultPricesListsResolver,
     DefaultProductsListsResolver,
+    ProductsListsResolver,
+    LocationsListsResolver,
+    AccountssListsResolver,
+    AuthenticationResolvers,
     graphene.ObjectType
     ):
     pass
 
     node = Node.Field()
-    location = graphene.Field(Location)
-    product = graphene.Field(Product)
-    product_price = graphene.Field(ProductPrice)
-    account = graphene.Field(Account)
 
 
 schema = graphene.Schema(
@@ -96,5 +99,6 @@ schema = graphene.Schema(
         Location,
         Product,
         ProductPrice,
+        DefaultProduct,
         Account,
     ])

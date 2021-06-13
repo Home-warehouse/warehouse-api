@@ -1,12 +1,22 @@
 import uvicorn
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.graphql import GraphQLApp
 
-from dependencies import get_query_token
 from schema import schema
 
-app = FastAPI(dependencies=[Depends(get_query_token)])
+
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+    "http://localhost:4200",
+    "http://localhost:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.debug = True
 
 app.add_route('/graphql', GraphQLApp(schema))

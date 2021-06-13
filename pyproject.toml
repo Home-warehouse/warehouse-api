@@ -12,6 +12,7 @@ graphene = "^2.1.8"
 graphene-mongo = "^0.2.13"
 bcrypt = "^3.2.0"
 PyJWT = "^2.1.0"
+python-dotenv = "^0.17.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
