@@ -1,25 +1,33 @@
 import graphene
+from graphene.types.scalars import Boolean
 
-from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
+
 from graphene_mongo.fields import MongoengineConnectionField
-from graphql_relay.node.node import from_global_id
 
 from mongoengine import Document
-from mongoengine.base.fields import ObjectIdField
-from mongoengine.fields import ListField, StringField
+from mongoengine.fields import BooleanField, ListField, ReferenceField, StringField
+from mongoengine.queryset.base import CASCADE, PULL
+
+from bson import ObjectId
+from pydantic.utils import Obj
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from models.product import ProductModel
+from resolvers.node import CustomNode
 
 # Models
 
 
 class LocationModel(Document):
     meta = {"collection": "locations"}
-    parent_id = ObjectIdField()
+    root = BooleanField()
     location_name = StringField(required=True)
     description = StringField()
-    products = ListField(ObjectIdField())
+    products = ListField(ReferenceField(
+        ProductModel, reverse_delete_rule=PULL))
+    childrens = ListField(ReferenceField(
+        'LocationModel', reverse_delete_rule=PULL))
 
 # Types
 
@@ -28,17 +36,23 @@ class Location(MongoengineObjectType):
 
     class Meta:
         model = LocationModel
-        interfaces = (Node,)
+        interfaces = (CustomNode, )
+        filter_fields = {
+            'id': ['exact'],
+            'root': ['exact'],
+            'location_name': ['exact', 'icontains', 'istartswith']
+        }
 
 # Mutations
 
 
 class LocationInput(graphene.InputObjectType):
     id = graphene.ID()
-    parent_id = graphene.ID()
+    root = graphene.Boolean()
     location_name = graphene.String()
     description = graphene.String()
     products = graphene.List(graphene.ID)
+    childrens = graphene.List(graphene.ID)
 
 
 class CreateLocationMutation(graphene.Mutation):
@@ -49,9 +63,11 @@ class CreateLocationMutation(graphene.Mutation):
 
     def mutate(parent, info, location_details=None):
         location = LocationModel(
-            parent_id=location_details.parent_id,
+            root=location_details.root,
             location_name=location_details.location_name,
             description=location_details.description,
+            products=location_details.products,
+            childrens=location_details.childrens
         )
         location.save()
 
@@ -70,17 +86,28 @@ class UpdateLocationMutation(graphene.Mutation):
         location_details = LocationInput(required=True)
 
     def mutate(parent, info, id=None, location_details=None):
-        foundObjects = list(LocationModel.objects(
-            **{"id": from_global_id(id)[1]}))
-        if(len(foundObjects) > 0):
-            location_details["id"] = from_global_id(id)[1]
+        found_objects = list(LocationModel.objects(**{"id": id}))
+        if len(found_objects) == 1:
+            if location_details.products:
+                for index, item in enumerate(location_details.products):
+                    location_details.products[index] = ObjectId(
+                        location_details.products[index])
+                location_details.products.extend(found_objects[0].products)
+
+            if location_details.childrens:
+                for index, item in enumerate(location_details.childrens):
+                    location_details.childrens[index] = ObjectId(
+                        location_details.childrens[index])
+                location_details.childrens.extend(found_objects[0].childrens)
+
+            location_details["id"] = id
             location = LocationModel(**location_details)
             location.update(**location_details)
             return UpdateLocationMutation(location=location, modified=True)
-        else:
-            return UpdateLocationMutation(location=id, modified=False)
+        return UpdateLocationMutation(location=id, modified=False)
     mutate = permissions_checker(
         fn=mutate, permissions=PermissionsType(allow_any="user"))
+
 
 class DeleteLocationMutation(graphene.Mutation):
     id = graphene.ID(required=True)
@@ -90,14 +117,11 @@ class DeleteLocationMutation(graphene.Mutation):
         id = graphene.ID(required=True)
 
     def mutate(parent, info, id=None):
-        found_objects = list(LocationModel.objects(
-            **{"id": from_global_id(id)[1]}))
+        found_objects = list(LocationModel.objects(**{"id": id}))
         if len(found_objects) > 0:
             LocationModel.delete(found_objects[0])
-            return DeleteLocationMutation(
-                id=from_global_id(id)[1], deleted=True)
-        return DeleteLocationMutation(
-            id=from_global_id(id)[1], deleted=False)
+            return DeleteLocationMutation(id=id, deleted=True)
+        return DeleteLocationMutation(id=id, deleted=False)
     mutate = permissions_checker(
         fn=mutate, permissions=PermissionsType(allow_any="user"))
 
@@ -105,10 +129,10 @@ class DeleteLocationMutation(graphene.Mutation):
 
 
 class LocationsListsResolver(graphene.ObjectType):
-    locations = MongoengineConnectionField(Location)
+    locations_list = MongoengineConnectionField(Location)
 
-    def resolve_locations(parent, info):
+    def resolve_locations_list(parent, info, **kwargs):
         MongoengineConnectionField(Location)
 
-    resolve_locations = permissions_checker(
-        resolve_locations, PermissionsType(allow_any="user"))
+    resolve_locations_list = permissions_checker(
+        resolve_locations_list, PermissionsType(allow_any="user"))

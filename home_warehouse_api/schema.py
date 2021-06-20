@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 import graphene
-from graphene.relay import Node
 
 from mongoengine import connect
 from pymongo.errors import ConnectionFailure
@@ -35,7 +34,8 @@ from models.product_price import (
     ProductPrice
 )
 from models.account import (
-    AccountssListsResolver,
+    AccountResolvers,
+    AccountsListsResolver,
     CreateAccountMutation,
     UpdateAccountMutation,
     DeleteAccountMutation,
@@ -83,13 +83,12 @@ class Query(
     DefaultProductsListsResolver,
     ProductsListsResolver,
     LocationsListsResolver,
-    AccountssListsResolver,
+    AccountsListsResolver,
+    AccountResolvers,
     AuthenticationResolvers,
     graphene.ObjectType
     ):
     pass
-
-    node = Node.Field()
 
 
 schema = graphene.Schema(

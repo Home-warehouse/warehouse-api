@@ -1,15 +1,14 @@
 import graphene
 
-from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
-from graphql_relay.node.node import from_global_id
 
 from mongoengine import Document
 from mongoengine.base.fields import ObjectIdField
 from mongoengine.fields import StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from resolvers.node import CustomNode
 
 # Models
 
@@ -27,7 +26,7 @@ class Product(MongoengineObjectType):
 
     class Meta:
         model = ProductModel
-        interfaces = (Node,)
+        interfaces = (CustomNode,)
         filter_fields = {
             'product_name': ['exact', 'icontains', 'istartswith']
         }
@@ -72,16 +71,14 @@ class UpdateProductMutation(graphene.Mutation):
         product_details = ProductInput(required=True)
 
     def mutate(parent, info, id=None, product_details=None):
-        found_objects = list(ProductModel.objects(
-            **{"id": from_global_id(id)[1]}))
+        found_objects = list(ProductModel.objects(**{"id": id}))
         if len(found_objects) > 0:
-            product_details["id"] = from_global_id(id)[1]
+            product_details["id"] = id
             product = ProductModel(**product_details)
             product.update(**product_details)
             return UpdateProductMutation(product=product, modified=True)
         return UpdateProductMutation(product=id, modified=False)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
+    mutate = permissions_checker(fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class DeleteProductMutation(graphene.Mutation):
@@ -92,14 +89,11 @@ class DeleteProductMutation(graphene.Mutation):
         id = graphene.ID(required=True)
 
     def mutate(parent, info, id=None):
-        found_objects = list(ProductModel.objects(
-            **{"id": from_global_id(id)[1]}))
+        found_objects = list(ProductModel.objects(**{"id": id}))
         if len(found_objects) > 0:
             ProductModel.delete(found_objects[0])
-            return DeleteProductMutation(
-                id=from_global_id(id)[1], deleted=True)
-        return DeleteProductMutation(
-            id=from_global_id(id)[1], deleted=False)
+            return DeleteProductMutation(id=id, deleted=True)
+        return DeleteProductMutation(id=id, deleted=False)
 
     mutate = permissions_checker(
         fn=mutate, permissions=PermissionsType(allow_any="user"))
@@ -108,10 +102,10 @@ class DeleteProductMutation(graphene.Mutation):
 
 
 class ProductsListsResolver(graphene.ObjectType):
-    products = MongoengineConnectionField(Product)
+    products_list = MongoengineConnectionField(Product)
 
-    def resolve_products(parent, info):
+    def resolve_products_list(parent, info):
         MongoengineConnectionField(Product)
 
-    resolve_products = permissions_checker(
-        resolve_products, PermissionsType(allow_any="user"))
+    resolve_products_list = permissions_checker(
+        resolve_products_list, PermissionsType(allow_any="user"))

@@ -2,10 +2,8 @@ from datetime import datetime
 
 import graphene
 
-from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
-from graphql_relay.node.node import from_global_id
 
 from mongoengine import Document
 from mongoengine.document import EmbeddedDocument
@@ -19,6 +17,7 @@ from mongoengine.fields import (
 
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.default_product import DefaultProduct
+from resolvers.node import CustomNode
 
 # Models
 
@@ -41,13 +40,13 @@ class ProductPrice(MongoengineObjectType):
 
     class Meta:
         model = ProductPriceModel
-        interfaces = (Node,)
+        interfaces = (CustomNode,)
 
 
 class PriceRegistration(MongoengineObjectType):
     class Meta:
         model = PriceRegistrationModel
-        interfaces = (Node,)
+        interfaces = (CustomNode,)
 
 
 # Mutations
@@ -91,10 +90,8 @@ class UpdateProductPriceMutation(graphene.Mutation):
         productPrice_details = ProductPriceInput(required=True)
 
     def mutate(parent, info, id=None, productPrice_details=None):
-        found_objects = list(ProductPriceModel.objects(
-            **{"id": from_global_id(id)[1]}))
+        found_objects = list(ProductPriceModel.objects(**{"id": id}))
         if len(found_objects) > 0:
-            productPrice_details["id"] = from_global_id(id)[1]
             product_price = ProductPriceModel(**productPrice_details)
             product_price.update(**productPrice_details)
             return UpdateProductPriceMutation(
@@ -112,14 +109,12 @@ class DeleteProductPriceMutation(graphene.Mutation):
         id = graphene.ID(required=True)
 
     def mutate(parent, info, id=None):
-        found_objects = list(ProductPriceModel.objects(
-            **{"id": from_global_id(id)[1]}))
+        found_objects = list(ProductPriceModel.objects(**{"id": id}))
         if len(found_objects) > 0:
             ProductPriceModel.delete(found_objects[0])
             return DeleteProductPriceMutation(
-                id=from_global_id(id)[1], deleted=True)
-        return DeleteProductPriceMutation(
-            id=from_global_id(id)[1], deleted=False)
+                id=id, deleted=True)
+        return DeleteProductPriceMutation(id=id, deleted=False)
     mutate = permissions_checker(
         fn=mutate, permissions=PermissionsType(allow_any="user"))
     
@@ -127,11 +122,11 @@ class DeleteProductPriceMutation(graphene.Mutation):
 
 
 class DefaultPricesListsResolver(graphene.ObjectType):
-    default_prices = MongoengineConnectionField(DefaultProduct)
+    default_prices_list = MongoengineConnectionField(DefaultProduct)
 
-    def resolve_default_prices(parent, info):
+    def resolve_default_prices_list(parent, info):
         MongoengineConnectionField(DefaultProduct)
 
-    resolve_default_prices = permissions_checker(
-        resolve_default_prices, PermissionsType(allow_any="user"))
+    resolve_default_prices_list = permissions_checker(
+        resolve_default_prices_list, PermissionsType(allow_any="user"))
 

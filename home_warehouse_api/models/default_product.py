@@ -1,6 +1,5 @@
 import graphene
 
-from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
 
@@ -9,6 +8,7 @@ from mongoengine.base.fields import ObjectIdField
 from mongoengine.fields import StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from resolvers.node import CustomNode
 
 # Models
 
@@ -27,7 +27,7 @@ class DefaultProduct(MongoengineObjectType):
 
     class Meta:
         model = DefaultProductModel
-        interfaces = (Node,)
+        interfaces = (CustomNode,)
 
 # Mutations
 
@@ -65,10 +65,10 @@ class CreateDefaultProductMutation(graphene.Mutation):
 
 
 class DefaultProductsListsResolver(graphene.ObjectType):
-    default_products = MongoengineConnectionField(DefaultProduct)
+    default_products_list = MongoengineConnectionField(DefaultProduct)
 
-    def resolve_default_products(parent, info):
+    def resolve_default_products_list(parent, info):
         MongoengineConnectionField(DefaultProduct)
 
-    resolve_default_products = permissions_checker(
-        resolve_default_products, PermissionsType(allow_any="user"))
+    resolve_default_products_list = permissions_checker(
+        resolve_default_products_list, PermissionsType(allow_any="user"))

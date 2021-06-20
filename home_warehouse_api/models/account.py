@@ -1,15 +1,14 @@
 import graphene
 from graphene_mongo.fields import MongoengineConnectionField
+from resolvers.node import CustomNode
 
 from services.auth import jwt_authorize
-from graphene.relay import Node
 from graphene_mongo import MongoengineObjectType
-from graphql_relay.node.node import from_global_id, to_global_id
 
 from mongoengine import Document
 from mongoengine.fields import StringField
 
-from services.hash_password import hash_password
+from services.hash_password import hash_password, verify_password
 
 from starlette.requests import Request
 from middlewares.permissions import PermissionsType, permissions_checker
@@ -31,7 +30,7 @@ class Account(MongoengineObjectType):
 
     class Meta:
         model = AccountModel
-        interfaces = (Node,)
+        interfaces = (CustomNode,)
 
 # Mutations
 
@@ -75,8 +74,9 @@ class UpdateAccountMutation(graphene.Mutation):
 
     class Arguments:
         account_details = AccountInput(required=True)
+        old_password = graphene.String()
 
-    def mutate(parent, info, account_details=None):
+    def mutate(parent, info, account_details=None, old_password=None):
         request: Request = Request(info.context["request"])
         object_id = jwt_authorize(request.headers["authorization"])[
             "client_id"]
@@ -84,13 +84,18 @@ class UpdateAccountMutation(graphene.Mutation):
         found_objects = list(AccountModel.objects(
             **{"id": object_id}))
         if len(found_objects) > 0:
+            # TODO: Dont allow to change rank if not admin
+            if old_password:
+                if not verify_password(found_objects[0]["password"], old_password):
+                    return UpdateAccountMutation(account=object_id, modified=False)
+                else:
+                    account_details["password"] = hash_password(account_details.password)
+                    print(account_details)
             account_details["id"] = object_id
-            account_details["password"] = hash_password(
-                account_details.password)
             account = AccountModel(**account_details)
             account.update(**account_details)
             return UpdateAccountMutation(account=account, modified=True)
-        return UpdateAccountMutation(account=to_global_id(object_id), modified=False)
+        return UpdateAccountMutation(account=object_id, modified=False)
 
     mutate = permissions_checker(
         fn=mutate, permissions=PermissionsType(allow_any="user"))
@@ -118,11 +123,38 @@ class DeleteAccountMutation(graphene.Mutation):
 # Resolvers
 
 
-class AccountssListsResolver(graphene.ObjectType):
-    accounts = MongoengineConnectionField(Account)
+class AccountsListsResolver(graphene.ObjectType):
+    accounts_list = MongoengineConnectionField(Account)
 
-    def resolve_accounts(parent, info):
+    def resolve_accounts_list(parent, info):
         MongoengineConnectionField(Account)
 
-    resolve_accounts = permissions_checker(
-        resolve_accounts, PermissionsType(allow_any="admin"))
+    resolve_accounts_list = permissions_checker(
+        resolve_accounts_list, PermissionsType(allow_any="admin"))
+
+
+class MyAccountType(graphene.ObjectType):
+    email = graphene.String()
+    firstName = graphene.String()
+    lastName = graphene.String()
+
+
+def resolve_my_accout(parent, info):
+    request: Request = Request(info.context["request"])
+    decoded = jwt_authorize(request.headers["authorization"])
+    found_objects = list(AccountModel.objects(**{"id": decoded["client_id"]}))
+    if len(found_objects) > 0:
+        account = found_objects[0]
+        return MyAccountType(email=account["email"], firstName=account["first_name"], lastName=account["last_name"])
+
+
+_my_account = graphene.Field(
+    description='Get account information about your account',
+    type=MyAccountType,
+    resolver=resolve_my_accout,
+    email=graphene.String(default_value=None),
+)
+
+
+class AccountResolvers(graphene.ObjectType):
+    myAccount = _my_account
