@@ -6,13 +6,13 @@ from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
 
 from mongoengine import Document
-from mongoengine.fields import BooleanField, ListField, ReferenceField, StringField
-from mongoengine.queryset.base import CASCADE, PULL
+from mongoengine.fields import BooleanField, EmbeddedDocumentField, ListField, ReferenceField, StringField
+from mongoengine.queryset.base import PULL
 
 from bson import ObjectId
-from pydantic.utils import Obj
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
 from models.product import ProductModel
 from resolvers.node import CustomNode
 
@@ -28,6 +28,7 @@ class LocationModel(Document):
         ProductModel, reverse_delete_rule=PULL))
     childrens = ListField(ReferenceField(
         'LocationModel', reverse_delete_rule=PULL))
+    custom_columns = ListField(EmbeddedDocumentField(CustomColumnValueModel))
 
 # Types
 
@@ -53,6 +54,8 @@ class LocationInput(graphene.InputObjectType):
     description = graphene.String()
     products = graphene.List(graphene.ID)
     childrens = graphene.List(graphene.ID)
+    custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
+    
 
 
 class CreateLocationMutation(graphene.Mutation):
@@ -67,7 +70,8 @@ class CreateLocationMutation(graphene.Mutation):
             location_name=location_details.location_name,
             description=location_details.description,
             products=location_details.products,
-            childrens=location_details.childrens
+            childrens=location_details.childrens,
+            custom_columns=location_details.custom_columns
         )
         location.save()
 

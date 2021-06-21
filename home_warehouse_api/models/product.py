@@ -4,21 +4,19 @@ from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
 
 from mongoengine import Document
-from mongoengine.base.fields import ObjectIdField
-from mongoengine.fields import StringField
+from mongoengine.fields import EmbeddedDocumentField, ListField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
 from resolvers.node import CustomNode
 
 # Models
-
 
 class ProductModel(Document):
     meta = {"collection": "products"}
     product_name = StringField()
     icon = StringField()
-    price_id = ObjectIdField()
-    custom_columns = StringField()
+    custom_columns = ListField(EmbeddedDocumentField(CustomColumnValueModel))
 
 
 # Types
@@ -33,13 +31,12 @@ class Product(MongoengineObjectType):
 
 
 # Mutations
+
 class ProductInput(graphene.InputObjectType):
     id = graphene.ID()
     product_name = graphene.String(required=True)
     icon = graphene.String()
-    price_id = graphene.ID()
-    custom_columns = graphene.JSONString()
-
+    custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
 
 class CreateProductMutation(graphene.Mutation):
     product = graphene.Field(Product)
@@ -51,7 +48,6 @@ class CreateProductMutation(graphene.Mutation):
         product = ProductModel(
             product_name=product_details.product_name,
             icon=product_details.icon,
-            price_id=product_details.price_id,
             custom_columns=product_details.custom_columns
         )
         product.save()
