@@ -55,7 +55,6 @@ class LocationInput(graphene.InputObjectType):
     products = graphene.List(graphene.ID)
     childrens = graphene.List(graphene.ID)
     custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
-    
 
 
 class CreateLocationMutation(graphene.Mutation):

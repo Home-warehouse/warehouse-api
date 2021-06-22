@@ -75,6 +75,43 @@ class CreateCustomColumnMutation(graphene.Mutation):
     mutate = permissions_checker(
         fn=mutate, permissions=PermissionsType(allow_any="user"))
 
+
+class UpdateCustomColumnMutation(graphene.Mutation):
+    id = graphene.String(required=True)
+    custom_column = graphene.Field(CustomColumn)
+    modified = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.String(required=True)
+        custom_column_details = CustomColumnInput(required=True)
+
+    def mutate(parent, info, id=None, custom_column_details=None):
+        found_objects = list(CustomColumnModel.objects(**{"id": id}))
+        if len(found_objects) > 0:
+            custom_column_details["id"] = id
+            custom_column = CustomColumnModel(**custom_column_details)
+            custom_column.update(**custom_column_details)
+            return UpdateCustomColumnMutation(custom_column=custom_column, modified=True)
+        return UpdateCustomColumnMutation(custom_column=id, modified=False)
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
+
+
+class DeleteCustomColumnnMutation(graphene.Mutation):
+    id = graphene.ID(required=True)
+    deleted = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    def mutate(parent, info, id=None):
+        found_objects = list(CustomColumnModel.objects(**{"id": id}))
+        if len(found_objects) > 0:
+            CustomColumnModel.delete(found_objects[0])
+            return DeleteCustomColumnnMutation(id=id, deleted=True)
+        return DeleteCustomColumnnMutation(id=id, deleted=False)
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
 # Resolvers
 
 

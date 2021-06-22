@@ -9,7 +9,9 @@ from pymongo.errors import ConnectionFailure
 from models.custom_columns import (
     CreateCustomColumnMutation,
     CustomColumn,
-    CustomColumnsListsResolver
+    CustomColumnsListsResolver,
+    DeleteCustomColumnnMutation,
+    UpdateCustomColumnMutation
 )
 
 from models.location import (
@@ -69,6 +71,8 @@ class Mutation(graphene.ObjectType):
     delete_location = DeleteLocationMutation.Field()
 
     create_custom_column = CreateCustomColumnMutation.Field()
+    modify_custom_column = UpdateCustomColumnMutation.Field()
+    delete_custom_column = DeleteCustomColumnnMutation.Field()
 
     create_product = CreateProductMutation.Field()
     modify_product = UpdateProductMutation.Field()
