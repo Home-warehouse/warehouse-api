@@ -15,6 +15,7 @@ from resolvers.node import CustomNode
 class ProductModel(Document):
     meta = {"collection": "products"}
     product_name = StringField()
+    description = StringField()
     icon = StringField()
     custom_columns = ListField(EmbeddedDocumentField(CustomColumnValueModel))
 
@@ -35,6 +36,7 @@ class Product(MongoengineObjectType):
 class ProductInput(graphene.InputObjectType):
     id = graphene.ID()
     product_name = graphene.String(required=True)
+    description = graphene.String()
     icon = graphene.String()
     custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
 
@@ -47,6 +49,7 @@ class CreateProductMutation(graphene.Mutation):
     def mutate(parent, info, product_details=None):
         product = ProductModel(
             product_name=product_details.product_name,
+            description=product_details.description,
             icon=product_details.icon,
             custom_columns=product_details.custom_columns
         )
