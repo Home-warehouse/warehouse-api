@@ -21,6 +21,7 @@ from models.location import (
     DeleteLocationMutation,
     Location
 )
+
 from models.product import (
     CreateProductMutation,
     UpdateProductMutation,
@@ -28,18 +29,7 @@ from models.product import (
     ProductsListsResolver,
     Product
 )
-# from models.default_product import (
-#     CreateDefaultProductMutation,
-#     DefaultProduct,
-#     DefaultProductsListsResolver
-# )
-# from models.product_price import (
-#     CreateProductPriceMutation,
-#     DefaultPricesListsResolver,
-#     UpdateProductPriceMutation,
-#     DeleteProductPriceMutation,
-#     ProductPrice
-# )
+
 from models.account import (
     AccountResolvers,
     AccountsListsResolver,
@@ -48,6 +38,7 @@ from models.account import (
     DeleteAccountMutation,
     Account
 )
+
 from resolvers.authentication import AuthenticationResolvers
 
 load_dotenv()
@@ -78,20 +69,12 @@ class Mutation(graphene.ObjectType):
     modify_product = UpdateProductMutation.Field()
     delete_product = DeleteProductMutation.Field()
 
-    # create_default_product = CreateDefaultProductMutation.Field()
-
-    # create_product_price = CreateProductPriceMutation.Field()
-    # modify_product_price = UpdateProductPriceMutation.Field()
-    # delete_product_price = DeleteProductPriceMutation.Field()
-
     create_account = CreateAccountMutation.Field()
     modify_account = UpdateAccountMutation.Field()
     delete_account = DeleteAccountMutation.Field()
 
 
 class Query(
-    # DefaultPricesListsResolver,
-    # DefaultProductsListsResolver,
     CustomColumnsListsResolver,
     ProductsListsResolver,
     LocationsListsResolver,
@@ -109,7 +92,5 @@ schema = graphene.Schema(
         CustomColumn,
         Location,
         Product,
-        # ProductPrice,
-        # DefaultProduct,
         Account,
     ])

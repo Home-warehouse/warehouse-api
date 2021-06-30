@@ -16,7 +16,6 @@ class PermissionsType(BaseModel):
 
 def permissions_checker(fn, permissions: PermissionsType):
     def wrapper(*args, **kwargs):
-        return fn(*args, **kwargs)
         request: Request = Request(args[1].context["request"])        
         try:
             token = request.headers["authorization"]

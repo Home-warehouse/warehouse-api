@@ -359,6 +359,45 @@ mccabe = ">=0.6,<0.7"
 toml = ">=0.7.1"
 
 [[package]]
+name = "pylint-django"
+version = "2.4.4"
+description = "A Pylint plugin to help Pylint understand the Django web framework"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pylint = ">=2.0"
+pylint-plugin-utils = ">=0.5"
+
+[package.extras]
+for_tests = ["django-tables2", "factory-boy", "coverage", "pytest"]
+with_django = ["django"]
+
+[[package]]
+name = "pylint-mongoengine"
+version = "0.4.0"
+description = "A Pylint plugin to help it understand MongoEngine"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pylint = ">=2.0"
+pylint-plugin-utils = ">=0.5"
+
+[[package]]
+name = "pylint-plugin-utils"
+version = "0.6"
+description = "Utilities and helpers for writing Pylint plugins"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pylint = ">=1.7"
+
+[[package]]
 name = "pymongo"
 version = "3.11.4"
 description = "Python driver for MongoDB <http://www.mongodb.org>"
@@ -510,7 +549,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "285a5502aad12a22033e9e8a63832f7a26b848b0f28163e7c92b66cb0790e60a"
+content-hash = "baf6cc76f2a3966faf1126ae9fcacbd90e666c2c188997ad9c3f0957add4854f"
 
 [metadata.files]
 aniso8601 = [
@@ -726,6 +765,17 @@ pyjwt = [
 pylint = [
     {file = "pylint-2.8.3-py3-none-any.whl", hash = "sha256:792b38ff30903884e4a9eab814ee3523731abd3c463f3ba48d7b627e87013484"},
     {file = "pylint-2.8.3.tar.gz", hash = "sha256:0a049c5d47b629d9070c3932d13bff482b12119b6a241a93bc460b0be16953c8"},
+]
+pylint-django = [
+    {file = "pylint-django-2.4.4.tar.gz", hash = "sha256:f63f717169b0c2e4e19c28f1c32c28290647330184fcb7427805ae9b6994f3fc"},
+    {file = "pylint_django-2.4.4-py3-none-any.whl", hash = "sha256:aff49d9602a39c027b4ed7521a041438893205918f405800063b7ff692b7371b"},
+]
+pylint-mongoengine = [
+    {file = "pylint-mongoengine-0.4.0.tar.gz", hash = "sha256:328577c30460ddfe3ef4b95f98f2855b5503063c02b77efcf7f36676f20a1176"},
+]
+pylint-plugin-utils = [
+    {file = "pylint-plugin-utils-0.6.tar.gz", hash = "sha256:57625dcca20140f43731311cd8fd879318bf45a8b0fd17020717a8781714a25a"},
+    {file = "pylint_plugin_utils-0.6-py3-none-any.whl", hash = "sha256:2f30510e1c46edf268d3a195b2849bd98a1b9433229bb2ba63b8d776e1fc4d0a"},
 ]
 pymongo = [
     {file = "pymongo-3.11.4-cp27-cp27m-macosx_10_14_intel.whl", hash = "sha256:b7efc7e7049ef366777cfd35437c18a4166bb50a5606a1c840ee3b9624b54fc9"},
