@@ -1,0 +1,30 @@
+version: "3.0"
+services:
+  home-warehouse-api:
+    container_name: home-warehouse-api
+    restart: always
+    build: ../
+    hostname: home-warehouse-api
+    ports:
+      - '3000:3000'
+    volumes:
+      - ${API_DIR}:/usr/src/app/home-warehouse-api/data
+    links:
+      - mongo
+  home-warehouse-ui:
+    container_name: home-warehouse-ui
+    restart: always
+    build: ../../home-warehouse-ui
+    ports:
+      - '80:80'
+    links:
+      - home-warehouse-api
+  mongo:
+    container_name: home-warehouse-db
+    hostname: mongo
+    restart: always
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - ${DB_DIR}:/data/db
