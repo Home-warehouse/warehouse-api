@@ -1,0 +1,151 @@
+import graphene
+
+from graphene_mongo import MongoengineObjectType
+from graphene_mongo.fields import MongoengineConnectionField
+
+from mongoengine import Document
+from mongoengine.document import EmbeddedDocument
+from mongoengine.fields import IntField, ListField, ReferenceField, StringField
+
+from middlewares.permissions import PermissionsType, permissions_checker
+from models.account import AccountModel
+from models.custom_columns import CustomColumnModel
+from models.location import LocationModel
+from resolvers.node import CustomNode
+
+# Models
+
+
+class SortRaportModel(EmbeddedDocument):
+    column_id = StringField()
+    by = StringField()
+
+
+class FilterRaportModel(EmbeddedDocument):
+    column_id = StringField()
+    values = ListField(StringField())
+
+
+class RaportModel(Document):
+    meta = {"collection": "raports"}
+    raport_name = StringField()
+    description = StringField()
+    users = ListField(ReferenceField(AccountModel))
+    custom_columns = ListField(ReferenceField(CustomColumnModel))
+    root_location = ReferenceField(LocationModel)
+    sort = SortRaportModel()
+    filter = ListField(FilterRaportModel)
+    short_results = IntField()
+
+
+# Types
+class Raport(MongoengineObjectType):
+
+    class Meta:
+        model = RaportModel
+        interfaces = (CustomNode,)
+        filter_fields = {
+            'raport_name': ['exact', 'icontains', 'istartswith']
+        }
+
+
+# Mutations
+class SortRaportInput(graphene.InputObjectType):
+    column_id = graphene.ID()
+    by = graphene.String()
+
+
+class FilterRaportInput(graphene.InputObjectType):
+    column_id = graphene.ID()
+    value = graphene.String()
+
+
+class RaportInput(graphene.InputObjectType):
+    id = graphene.ID()
+    raport_name = graphene.String(required=True)
+    description = graphene.String()
+    users = graphene.String()
+    custom_columns = graphene.List(graphene.ID)
+    root_location = graphene.ID
+    sort = graphene.InputField(SortRaportInput)
+    filter = graphene.InputField(graphene.List(FilterRaportInput))
+    short_results = graphene.Int()
+
+
+# TODO: Check if user has privilages to update - ONLY user[0] can allow new
+# users to access private shared raport
+class CreateRaportMutation(graphene.Mutation):
+    raport = graphene.Field(Raport)
+
+    class Arguments:
+        raport_details = RaportInput(required=True)
+
+    def mutate(parent, info, raport_details=None):
+        raport = RaportModel(
+            raport_name=raport_details.raport_name,
+            description=raport_details.description,
+            icon=raport_details.icon,
+            custom_columns=raport_details.custom_columns,
+            root_location=raport_details.root_location,
+            sort=raport_details.sort,
+            filter=raport_details.filter,
+            short_results=raport_details.short_results
+        )
+        raport.save()
+        return CreateRaportMutation(raport=raport)
+
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
+
+# TODO: Only users[0] of raport can delete raport - even if it is public.
+
+
+class UpdateRaportMutation(graphene.Mutation):
+    id = graphene.String(required=True)
+    raport = graphene.Field(Raport)
+    modified = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.String(required=True)
+        raport_details = RaportInput(required=True)
+
+    def mutate(parent, info, id=None, raport_details=None):
+        found_objects = list(RaportModel.objects(**{"id": id}))
+        if len(found_objects) > 0:
+            raport_details["id"] = id
+            raport = RaportModel(**raport_details)
+            raport.update(**raport_details)
+            return UpdateRaportMutation(raport=raport, modified=True)
+        return UpdateRaportMutation(raport=id, modified=False)
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
+
+
+class DeleteRaportMutation(graphene.Mutation):
+    id = graphene.ID(required=True)
+    deleted = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    def mutate(parent, info, id=None):
+        found_objects = list(RaportModel.objects(**{"id": id}))
+        if len(found_objects) > 0:
+            RaportModel.delete(found_objects[0])
+            return DeleteRaportMutation(id=id, deleted=True)
+        return DeleteRaportMutation(id=id, deleted=False)
+
+    mutate = permissions_checker(
+        fn=mutate, permissions=PermissionsType(allow_any="user"))
+
+# Resolvers
+
+
+class RaportsListsResolver(graphene.ObjectType):
+    raports_list = MongoengineConnectionField(Raport)
+
+    def resolve_raports_list(parent, info):
+        MongoengineConnectionField(Raport)
+
+    resolve_raports_list = permissions_checker(
+        resolve_raports_list, PermissionsType(allow_any="user"))

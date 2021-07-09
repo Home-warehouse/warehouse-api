@@ -30,6 +30,12 @@ from models.product import (
     Product
 )
 
+from models.raports import (
+    CreateRaportMutation,
+    DeleteRaportMutation,
+    UpdateRaportMutation
+)
+
 from models.account import (
     AccountResolvers,
     AccountsListsResolver,
@@ -72,6 +78,10 @@ class Mutation(graphene.ObjectType):
     create_account = CreateAccountMutation.Field()
     modify_account = UpdateAccountMutation.Field()
     delete_account = DeleteAccountMutation.Field()
+
+    create_raport = CreateRaportMutation.Field()
+    modify_raport = UpdateRaportMutation.Field()
+    delete_raport = DeleteRaportMutation.Field()
 
 
 class Query(
