@@ -5,7 +5,10 @@ from graphene_mongo.fields import MongoengineConnectionField
 
 from mongoengine import Document
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import IntField, ListField, ReferenceField, StringField
+from mongoengine.fields import (
+    EmbeddedDocumentListField, IntField,
+    ListField, ReferenceField, StringField
+)
 
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.account import AccountModel
@@ -23,7 +26,7 @@ class SortRaportModel(EmbeddedDocument):
 
 class FilterRaportModel(EmbeddedDocument):
     column_id = StringField()
-    values = ListField(StringField())
+    values = ListField(StringField)
 
 
 class RaportModel(Document):
@@ -34,7 +37,7 @@ class RaportModel(Document):
     custom_columns = ListField(ReferenceField(CustomColumnModel))
     root_location = ReferenceField(LocationModel)
     sort = SortRaportModel()
-    filter = ListField(FilterRaportModel)
+    filter = EmbeddedDocumentListField(FilterRaportModel)
     short_results = IntField()
 
 

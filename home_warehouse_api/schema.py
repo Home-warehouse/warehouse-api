@@ -24,6 +24,8 @@ from models.location import (
 
 from models.product import (
     CreateProductMutation,
+    ProductModel,
+    ProductsListFilteredResolver,
     UpdateProductMutation,
     DeleteProductMutation,
     ProductsListsResolver,
@@ -87,6 +89,7 @@ class Mutation(graphene.ObjectType):
 class Query(
     CustomColumnsListsResolver,
     ProductsListsResolver,
+    ProductsListFilteredResolver,
     LocationsListsResolver,
     AccountsListsResolver,
     AccountResolvers,
