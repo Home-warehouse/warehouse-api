@@ -24,7 +24,6 @@ from models.location import (
 
 from models.product import (
     CreateProductMutation,
-    ProductModel,
     ProductsListFilteredResolver,
     UpdateProductMutation,
     DeleteProductMutation,
@@ -35,6 +34,7 @@ from models.product import (
 from models.raports import (
     CreateRaportMutation,
     DeleteRaportMutation,
+    RaportsListsResolver,
     UpdateRaportMutation
 )
 
@@ -91,6 +91,7 @@ class Query(
     ProductsListsResolver,
     ProductsListFilteredResolver,
     LocationsListsResolver,
+    RaportsListsResolver,
     AccountsListsResolver,
     AccountResolvers,
     AuthenticationResolvers,

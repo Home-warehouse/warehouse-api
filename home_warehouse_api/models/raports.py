@@ -6,7 +6,7 @@ from graphene_mongo.fields import MongoengineConnectionField
 from mongoengine import Document
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import (
-    EmbeddedDocumentListField, IntField,
+    EmbeddedDocumentField, EmbeddedDocumentListField, IntField,
     ListField, ReferenceField, StringField
 )
 
@@ -14,30 +14,32 @@ from middlewares.permissions import PermissionsType, permissions_checker
 from models.account import AccountModel
 from models.custom_columns import CustomColumnModel
 from models.location import LocationModel
+from models.product import sortByEnum
 from resolvers.node import CustomNode
 
 # Models
 
 
 class SortRaportModel(EmbeddedDocument):
-    column_id = StringField()
-    by = StringField()
+    column_id = ReferenceField(CustomColumnModel)
+    value = StringField()
 
 
 class FilterRaportModel(EmbeddedDocument):
-    column_id = StringField()
-    values = ListField(StringField)
+    column_id = ReferenceField(CustomColumnModel)
+    comparsion = StringField()
+    value = StringField()
 
 
 class RaportModel(Document):
     meta = {"collection": "raports"}
     raport_name = StringField()
     description = StringField()
-    users = ListField(ReferenceField(AccountModel))
-    custom_columns = ListField(ReferenceField(CustomColumnModel))
+    # users = ListField(ReferenceField(AccountModel))
+    show_custom_columns = ListField(ReferenceField(CustomColumnModel))
     root_location = ReferenceField(LocationModel)
-    sort = SortRaportModel()
-    filter = EmbeddedDocumentListField(FilterRaportModel)
+    sort_by = EmbeddedDocumentField(SortRaportModel)
+    filter_by = EmbeddedDocumentListField(FilterRaportModel)
     short_results = IntField()
 
 
@@ -55,11 +57,12 @@ class Raport(MongoengineObjectType):
 # Mutations
 class SortRaportInput(graphene.InputObjectType):
     column_id = graphene.ID()
-    by = graphene.String()
+    value = sortByEnum()
 
 
 class FilterRaportInput(graphene.InputObjectType):
     column_id = graphene.ID()
+    comparsion = graphene.String()
     value = graphene.String()
 
 
@@ -67,11 +70,11 @@ class RaportInput(graphene.InputObjectType):
     id = graphene.ID()
     raport_name = graphene.String(required=True)
     description = graphene.String()
-    users = graphene.String()
-    custom_columns = graphene.List(graphene.ID)
-    root_location = graphene.ID
-    sort = graphene.InputField(SortRaportInput)
-    filter = graphene.InputField(graphene.List(FilterRaportInput))
+    # users = graphene.String()
+    show_custom_columns = graphene.List(graphene.ID)
+    root_location = graphene.ID()
+    sort_by = graphene.InputField(SortRaportInput)
+    filter_by = graphene.InputField(graphene.List(FilterRaportInput))
     short_results = graphene.Int()
 
 
@@ -87,11 +90,11 @@ class CreateRaportMutation(graphene.Mutation):
         raport = RaportModel(
             raport_name=raport_details.raport_name,
             description=raport_details.description,
-            icon=raport_details.icon,
-            custom_columns=raport_details.custom_columns,
+            # users=raport_details.users,
+            show_custom_columns=raport_details.show_custom_columns,
             root_location=raport_details.root_location,
-            sort=raport_details.sort,
-            filter=raport_details.filter,
+            sort_by=raport_details.sort_by,
+            filter_by=raport_details.filter_by,
             short_results=raport_details.short_results
         )
         raport.save()

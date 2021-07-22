@@ -118,8 +118,8 @@ class ProductsListsResolver(graphene.ObjectType):
 
 
 class sortByEnum(graphene.Enum):
-    ASC = ''
-    DESC = '-'
+    ASC = 'ASC'
+    DESC = 'DESC'
 
     @property
     def description(self):
