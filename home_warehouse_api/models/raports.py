@@ -11,42 +11,53 @@ from mongoengine.fields import (
 )
 
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.account import AccountModel
+from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
-from models.location import LocationModel
-from models.product import sortByEnum
+# from models.location import LocationModel
 from resolvers.node import CustomNode
 
 # Models
 
 
 class SortRaportModel(EmbeddedDocument):
-    column_id = ReferenceField(CustomColumnModel)
+    custom_column = ReferenceField(CustomColumnModel)
     value = StringField()
 
 
 class FilterRaportModel(EmbeddedDocument):
-    column_id = ReferenceField(CustomColumnModel)
-    comparsion = StringField()
+    custom_column = ReferenceField(CustomColumnModel)
+    comparison = StringField()
     value = StringField()
 
 
 class RaportModel(Document):
+    '''Raport model for mongoengine'''
     meta = {"collection": "raports"}
     raport_name = StringField()
     description = StringField()
     # users = ListField(ReferenceField(AccountModel))
     show_custom_columns = ListField(ReferenceField(CustomColumnModel))
-    root_location = ReferenceField(LocationModel)
+    # root_location = ReferenceField(LocationModel)
     sort_by = EmbeddedDocumentField(SortRaportModel)
     filter_by = EmbeddedDocumentListField(FilterRaportModel)
     short_results = IntField()
 
 
 # Types
-class Raport(MongoengineObjectType):
-
+class SortRaport(MongoengineObjectType):
     class Meta:
+        model = SortRaportModel
+        interfaces = (CustomNode,)
+
+class FilterRaport(MongoengineObjectType):
+    class Meta:
+        model = FilterRaportModel
+        interfaces = (CustomNode,)
+
+class Raport(MongoengineObjectType):
+    '''Raport type for Mongoengine ObjectType'''
+    class Meta:
+        '''Raport mongo object meta settings'''
         model = RaportModel
         interfaces = (CustomNode,)
         filter_fields = {
@@ -55,24 +66,16 @@ class Raport(MongoengineObjectType):
 
 
 # Mutations
-class SortRaportInput(graphene.InputObjectType):
-    column_id = graphene.ID()
-    value = sortByEnum()
-
-
-class FilterRaportInput(graphene.InputObjectType):
-    column_id = graphene.ID()
-    comparsion = graphene.String()
-    value = graphene.String()
 
 
 class RaportInput(graphene.InputObjectType):
+    '''Raport input for graphene'''
     id = graphene.ID()
     raport_name = graphene.String(required=True)
     description = graphene.String()
     # users = graphene.String()
     show_custom_columns = graphene.List(graphene.ID)
-    root_location = graphene.ID()
+    # root_location = graphene.ID()
     sort_by = graphene.InputField(SortRaportInput)
     filter_by = graphene.InputField(graphene.List(FilterRaportInput))
     short_results = graphene.Int()
@@ -92,7 +95,7 @@ class CreateRaportMutation(graphene.Mutation):
             description=raport_details.description,
             # users=raport_details.users,
             show_custom_columns=raport_details.show_custom_columns,
-            root_location=raport_details.root_location,
+            # root_location=raport_details.root_location,
             sort_by=raport_details.sort_by,
             filter_by=raport_details.filter_by,
             short_results=raport_details.short_results
@@ -150,8 +153,8 @@ class DeleteRaportMutation(graphene.Mutation):
 class RaportsListsResolver(graphene.ObjectType):
     raports_list = MongoengineConnectionField(Raport)
 
-    def resolve_raports_list(parent, info):
-        MongoengineConnectionField(Raport)
+    def resolve_raports_list(parent, info, *args, **kwargs):
+        MongoengineConnectionField(Raport, *args)
 
     resolve_raports_list = permissions_checker(
         resolve_raports_list, PermissionsType(allow_any="user"))

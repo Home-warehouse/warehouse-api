@@ -1,13 +1,16 @@
 import graphene
+from graphene.types.argument import Argument
 
 from graphene_mongo.fields import MongoengineConnectionField
 from graphene_mongo import MongoengineObjectType
+
 from bson.objectid import ObjectId
 
 from mongoengine import Document
 from mongoengine.fields import EmbeddedDocumentListField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
 from resolvers.node import CustomNode
 
@@ -117,35 +120,66 @@ class ProductsListsResolver(graphene.ObjectType):
         resolve_products_list, PermissionsType(allow_any="user"))
 
 
-class sortByEnum(graphene.Enum):
-    ASC = 'ASC'
-    DESC = 'DESC'
-
-    @property
-    def description(self):
-        if self == sortByEnum.ASC:
-            return 'Sort Ascending'
-        if self == sortByEnum.DESC:
-            return 'Sort Descending'
-
-
 class ProductsListFilteredResolver(graphene.ObjectType):
     products = MongoengineConnectionField(Product)
-    filter_products = graphene.List(
+    filter_sort_products = graphene.List(
         lambda: Product,
-        custom_column_ids=graphene.List(
+        # ONLY IF HAS COLUMNS
+        show_custom_columns=graphene.List(
             graphene.String,
             description="List of IDs of custom columns which are present in products"
         ),
-        sortByValue=sortByEnum()
+        filter_by=graphene.Argument(graphene.List(
+            FilterRaportInput), required=False),
+        sort_by=graphene.Argument(SortRaportInput),
+        limit=graphene.Int()
     )
 
-    def resolve_filter_products(parent, info, custom_column_ids, sortByValue=''):
-        parsed_ids = list(map(lambda id: ObjectId(id), custom_column_ids))
-        query = ProductModel.objects(
-            __raw__={'custom_columns.custom_column': {'$in': parsed_ids}})
-        query = query.order_by(sortByValue+'custom_columns.value')
-        return query
+    def resolve_filter_sort_products(parent, info, show_custom_columns, filter_by, sort_by, limit=20):
+        parsed_ids_show = list(
+            map(lambda id: ObjectId(id), show_custom_columns))
+        parsed_filters = list(
+            map(lambda obj: {"custom_columns.value": {str(obj.comparison): obj.value}}, filter_by))
 
-    resolve_filter_products = permissions_checker(
-        resolve_filter_products, PermissionsType(allow_any="user"))
+        pipeline = [
+            # FILTERS
+            {"$match": ({"$and": parsed_filters} if len(
+                parsed_filters) > 0 else {})},
+            # Show custom columns
+            {"$project": {
+             "product_name": True,
+             "description": True,
+             "icon": True,
+             "custom_columns":
+             {"$filter": {
+                 "input": "$custom_columns",
+                 "as": "cc",
+                 "cond": {"$in": ["$$cc.custom_column", parsed_ids_show]}
+             }}
+             }
+             },
+            # SORT
+            {"$addFields": {
+                "order": {
+                    "$filter": {
+                        "input": "$custom_columns",
+                        "as": "cc",
+                        "cond": {sort_by.value:
+                                 ["$$cc.custom_column",
+                                  ObjectId(sort_by.custom_column)
+                                  ]
+                                 }
+                    }
+                }
+            }},
+            {"$sort": {"order": int(sort_by.value)}},
+            {"$project": {"order": False}},
+            # LIMIT
+            {"$limit": limit},
+        ]
+        cursor = ProductModel.objects.aggregate(*pipeline)
+        parsed = list(map(lambda doc:  ProductModel._from_son(doc), cursor))
+        return parsed
+
+    resolve_filter_sort_products = permissions_checker(
+        resolve_filter_sort_products, PermissionsType(allow_any="user"))
