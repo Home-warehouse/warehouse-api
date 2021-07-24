@@ -61,7 +61,7 @@ class Raport(MongoengineObjectType):
         model = RaportModel
         interfaces = (CustomNode,)
         filter_fields = {
-            'raport_name': ['exact', 'icontains', 'istartswith']
+            'id': ['exact']
         }
 
 
