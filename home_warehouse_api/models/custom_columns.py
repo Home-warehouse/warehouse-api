@@ -1,5 +1,4 @@
 import graphene
-from graphene.relay.node import Node
 
 from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
@@ -33,7 +32,7 @@ class CustomColumn(MongoengineObjectType):
         model = CustomColumnModel
         interfaces = (CustomNode,)
         filter_fields = {
-            'name': ['exact', 'icontains', 'istartswith']
+            'name': ['exact', 'icontains', 'istartswith'],
         }
 
 
@@ -42,8 +41,8 @@ class CustomColumnValue(MongoengineObjectType):
         model = CustomColumnValueModel
         interfaces = (CustomNode, )
 
-
 # Mutations
+
 
 class CustomColumnValueInput(graphene.InputObjectType):
     custom_column = graphene.ID(required=True)
@@ -118,8 +117,8 @@ class DeleteCustomColumnnMutation(graphene.Mutation):
 class CustomColumnsListsResolver(graphene.ObjectType):
     custom_columns_list = MongoengineConnectionField(CustomColumn)
 
-    def resolve_custom_columns_list(parent, info):
-        MongoengineConnectionField(CustomColumn)
+    def resolve_custom_columns_list(parent, info, *args, **kwargs):
+        MongoengineConnectionField(CustomColumn, *args)
 
     resolve_custom_columns_list = permissions_checker(
         resolve_custom_columns_list, PermissionsType(allow_any="user"))

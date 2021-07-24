@@ -4,7 +4,7 @@ import jwt
 
 JWT_SECRET = "test_secret"
 JWT_SECRET_ENCODED = b64encode(JWT_SECRET.encode("utf-8"))
-JWT_EXP_MINUTES = 45
+JWT_EXP_MINUTES = 90
 
 
 def jwt_authenticate(client_id: str, rank: str):

@@ -24,10 +24,18 @@ from models.location import (
 
 from models.product import (
     CreateProductMutation,
+    ProductsListFilteredResolver,
     UpdateProductMutation,
     DeleteProductMutation,
     ProductsListsResolver,
     Product
+)
+
+from models.raports import (
+    CreateRaportMutation,
+    DeleteRaportMutation,
+    RaportsListsResolver,
+    UpdateRaportMutation
 )
 
 from models.account import (
@@ -73,11 +81,17 @@ class Mutation(graphene.ObjectType):
     modify_account = UpdateAccountMutation.Field()
     delete_account = DeleteAccountMutation.Field()
 
+    create_raport = CreateRaportMutation.Field()
+    modify_raport = UpdateRaportMutation.Field()
+    delete_raport = DeleteRaportMutation.Field()
+
 
 class Query(
     CustomColumnsListsResolver,
     ProductsListsResolver,
+    ProductsListFilteredResolver,
     LocationsListsResolver,
+    RaportsListsResolver,
     AccountsListsResolver,
     AccountResolvers,
     AuthenticationResolvers,
