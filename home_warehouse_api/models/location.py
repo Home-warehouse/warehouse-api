@@ -40,8 +40,7 @@ class Location(MongoengineObjectType):
         interfaces = (CustomNode, )
         filter_fields = {
             'id': ['exact'],
-            'root': ['exact'],
-            'location_name': ['exact', 'icontains', 'istartswith']
+            'root': ['exact']
         }
 
 # Mutations
@@ -134,8 +133,8 @@ class DeleteLocationMutation(graphene.Mutation):
 class LocationsListsResolver(graphene.ObjectType):
     locations_list = MongoengineConnectionField(Location)
 
-    def resolve_locations_list(parent, info, **kwargs):
-        MongoengineConnectionField(Location)
+    def resolve_locations_list(parent, info, *args, **kwargs):
+        MongoengineConnectionField(Location, *args)
 
     resolve_locations_list = permissions_checker(
         resolve_locations_list, PermissionsType(allow_any="user"))

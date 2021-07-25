@@ -126,8 +126,8 @@ class DeleteAccountMutation(graphene.Mutation):
 class AccountsListsResolver(graphene.ObjectType):
     accounts_list = MongoengineConnectionField(Account)
 
-    def resolve_accounts_list(parent, info):
-        MongoengineConnectionField(Account)
+    def resolve_accounts_list(parent, info, *args, **kwargs):
+        MongoengineConnectionField(Account, *args)
 
     resolve_accounts_list = permissions_checker(
         resolve_accounts_list, PermissionsType(allow_any="admin"))

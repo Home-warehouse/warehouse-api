@@ -8,12 +8,12 @@ JWT_EXP_MINUTES = 90
 
 
 def jwt_authenticate(client_id: str, rank: str):
+    '''Get JWT token'''
     token = jwt.encode(
         {
             "client_id": client_id,
             "rank": rank,
-            "exp":  datetime.datetime.utcnow() +
-            datetime.timedelta(minutes=JWT_EXP_MINUTES)
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=JWT_EXP_MINUTES)
         },
         JWT_SECRET_ENCODED,
         algorithm="HS256"
@@ -23,6 +23,7 @@ def jwt_authenticate(client_id: str, rank: str):
 
 
 def jwt_authorize(jwt_token):
+    '''Check JWT token'''
     try:
         token = jwt.decode(jwt_token, JWT_SECRET_ENCODED, algorithms=["HS256"])
         return token

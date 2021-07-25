@@ -8,7 +8,7 @@ from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import ListField, ReferenceField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
-from resolvers.node import CustomNode
+from resolvers.node import CustomNode, EmbeddedNode
 
 # Models
 
@@ -31,15 +31,12 @@ class CustomColumn(MongoengineObjectType):
     class Meta:
         model = CustomColumnModel
         interfaces = (CustomNode,)
-        filter_fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
-        }
 
 
 class CustomColumnValue(MongoengineObjectType):
     class Meta:
         model = CustomColumnValueModel
-        interfaces = (CustomNode, )
+        interfaces = (EmbeddedNode, )
 
 # Mutations
 

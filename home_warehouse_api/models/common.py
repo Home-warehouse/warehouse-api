@@ -1,5 +1,6 @@
 import graphene
 
+
 # TODO: FIX enums to behave like string checkers
 class sortByEnum(graphene.Enum):
     ASCENDING = '+'
@@ -11,6 +12,7 @@ class sortByEnum(graphene.Enum):
             return 'Sort Ascending'
         if self == sortByEnum.DESCENDING:
             return 'Sort Descending'
+
 
 class filterByEnum(graphene.Enum):
     EQUAL = '$eq'
@@ -25,8 +27,6 @@ class filterByEnum(graphene.Enum):
             return 'Comparison returns true if its greater'
         if self == filterByEnum.LESSER:
             return 'Comparison returns true if its lesser'
-
-
 
 
 class SortRaportInput(graphene.InputObjectType):

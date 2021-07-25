@@ -1,5 +1,4 @@
 import graphene
-from graphene.types.argument import Argument
 
 from graphene_mongo.fields import MongoengineConnectionField
 from graphene_mongo import MongoengineObjectType
@@ -33,9 +32,6 @@ class Product(MongoengineObjectType):
         '''Product mongo object meta settings'''
         model = ProductModel
         interfaces = (CustomNode,)
-        filter_fields = {
-            'product_name': ['exact', 'icontains', 'istartswith']
-        }
 
 
 # Mutations
@@ -178,7 +174,7 @@ class ProductsListFilteredResolver(graphene.ObjectType):
             {"$limit": limit},
         ]
         cursor = ProductModel.objects.aggregate(*pipeline)
-        parsed = list(map(lambda doc:  ProductModel._from_son(doc), cursor))
+        parsed = list(map(lambda doc: ProductModel._from_son(doc), cursor))
         return parsed
 
     resolve_filter_sort_products = permissions_checker(

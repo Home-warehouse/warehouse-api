@@ -14,7 +14,7 @@ from middlewares.permissions import PermissionsType, permissions_checker
 from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
 # from models.location import LocationModel
-from resolvers.node import CustomNode
+from resolvers.node import CustomNode, EmbeddedNode
 
 # Models
 
@@ -47,12 +47,14 @@ class RaportModel(Document):
 class SortRaport(MongoengineObjectType):
     class Meta:
         model = SortRaportModel
-        interfaces = (CustomNode,)
+        interfaces = (EmbeddedNode,)
+
 
 class FilterRaport(MongoengineObjectType):
     class Meta:
         model = FilterRaportModel
-        interfaces = (CustomNode,)
+        interfaces = (EmbeddedNode,)
+
 
 class Raport(MongoengineObjectType):
     '''Raport type for Mongoengine ObjectType'''
