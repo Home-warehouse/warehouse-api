@@ -9,6 +9,7 @@ from services.auth import jwt_authenticate, jwt_authorize
 
 
 class LoginType(graphene.ObjectType):
+    '''Login type for graphene'''
     email = graphene.String()
     password = graphene.String()
     authenticated = graphene.Boolean()
@@ -16,6 +17,7 @@ class LoginType(graphene.ObjectType):
 
 
 def resolve_login(parent, info, email, password):
+    '''Login resolver'''
     found_objects = list(AccountModel.objects(**{"email": email}))
     if len(found_objects) > 0:
         password_correct = verify_password(
@@ -29,7 +31,7 @@ def resolve_login(parent, info, email, password):
 
 
 _login = graphene.Field(
-    description = 'Get access_token in form of JWT token',
+    description="Get access_token in form of JWT token",
     type=LoginType,
     resolver=resolve_login,
     email=graphene.String(default_value=None),
@@ -38,6 +40,7 @@ _login = graphene.Field(
 
 
 class RefreshTokenType(graphene.ObjectType):
+    '''RefreshToken type for graphene'''
     email = graphene.String()
     password = graphene.String()
     authenticated = graphene.Boolean()
@@ -45,6 +48,7 @@ class RefreshTokenType(graphene.ObjectType):
 
 
 def resolve_refresh_token(parent, info):
+    '''Refresh token resolver'''
     request: Request = Request(info.context["request"])
     decoded = jwt_authorize(request.headers["authorization"])
     print(decoded)
@@ -56,7 +60,7 @@ def resolve_refresh_token(parent, info):
 
 
 _refresh_token = graphene.Field(
-    description = 'Refresh access_token by passing old one in headers as "Authorization" header',
+    description='Refresh access_token by passing old one in headers as "Authorization" header',
     type=RefreshTokenType,
     resolver=resolve_refresh_token
 )

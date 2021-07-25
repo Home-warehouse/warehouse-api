@@ -14,17 +14,19 @@ from middlewares.permissions import PermissionsType, permissions_checker
 from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
 # from models.location import LocationModel
-from resolvers.node import CustomNode
+from resolvers.node import CustomNode, EmbeddedNode
 
 # Models
 
 
 class SortRaportModel(EmbeddedDocument):
+    '''SortRaport model for mongoengine'''
     custom_column = ReferenceField(CustomColumnModel)
     value = StringField()
 
 
 class FilterRaportModel(EmbeddedDocument):
+    '''FilterRaport model for mongoengine'''
     custom_column = ReferenceField(CustomColumnModel)
     comparison = StringField()
     value = StringField()
@@ -45,17 +47,21 @@ class RaportModel(Document):
 
 # Types
 class SortRaport(MongoengineObjectType):
+    '''SortRaport type for mongoengine'''
     class Meta:
         model = SortRaportModel
-        interfaces = (CustomNode,)
+        interfaces = (EmbeddedNode,)
+
 
 class FilterRaport(MongoengineObjectType):
+    '''FilterRaport type for mongoengine'''
     class Meta:
         model = FilterRaportModel
-        interfaces = (CustomNode,)
+        interfaces = (EmbeddedNode,)
+
 
 class Raport(MongoengineObjectType):
-    '''Raport type for Mongoengine ObjectType'''
+    '''Raport type for mongoengine'''
     class Meta:
         '''Raport mongo object meta settings'''
         model = RaportModel

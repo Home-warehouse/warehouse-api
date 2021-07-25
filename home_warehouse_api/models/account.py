@@ -16,6 +16,7 @@ from middlewares.permissions import PermissionsType, permissions_checker
 
 
 class AccountModel(Document):
+    '''Account model for mongoengine'''
     meta = {"collection": "accounts"}
     email = StringField()
     first_name = StringField()
@@ -27,7 +28,7 @@ class AccountModel(Document):
 
 
 class Account(MongoengineObjectType):
-
+    '''Account type for mongoengine'''
     class Meta:
         model = AccountModel
         interfaces = (CustomNode,)
@@ -36,6 +37,7 @@ class Account(MongoengineObjectType):
 
 
 class AccountInput(graphene.InputObjectType):
+    '''Account input for graphene'''
     id = graphene.ID()
     email = graphene.String()
     first_name = graphene.String()
@@ -126,8 +128,8 @@ class DeleteAccountMutation(graphene.Mutation):
 class AccountsListsResolver(graphene.ObjectType):
     accounts_list = MongoengineConnectionField(Account)
 
-    def resolve_accounts_list(parent, info):
-        MongoengineConnectionField(Account)
+    def resolve_accounts_list(parent, info, *args, **kwargs):
+        MongoengineConnectionField(Account, *args)
 
     resolve_accounts_list = permissions_checker(
         resolve_accounts_list, PermissionsType(allow_any="admin"))

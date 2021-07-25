@@ -1,5 +1,4 @@
-import os
-from dotenv import load_dotenv
+from os import getenv
 import graphene
 
 from mongoengine import connect
@@ -49,22 +48,25 @@ from models.account import (
 
 from resolvers.authentication import AuthenticationResolvers
 
+from dotenv import load_dotenv
 load_dotenv()
 
 # Connect with database
 try:
     connection = connect(
         alias="default",
-        host=os.getenv("DB_URL"),
+        host=getenv("DB_URL"),
         serverSelectionTimeoutMS=3000
     )
     connection = connection.server_info()
-    print("Connected with databaase")
+    print("Connected with database")
 except ConnectionFailure as error:
+    print("Could not connect with database")
     print(error)
 
 
 class Mutation(graphene.ObjectType):
+    '''Mutations list'''
     create_location = CreateLocationMutation.Field()
     modify_location = UpdateLocationMutation.Field()
     delete_location = DeleteLocationMutation.Field()
@@ -96,8 +98,10 @@ class Query(
     AccountResolvers,
     AuthenticationResolvers,
     graphene.ObjectType
-    ):
+):
+    '''Resolvers list'''
     pass
+
 
 schema = graphene.Schema(
     query=Query,

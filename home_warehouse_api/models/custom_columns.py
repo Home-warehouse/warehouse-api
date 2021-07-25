@@ -8,12 +8,13 @@ from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import ListField, ReferenceField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
-from resolvers.node import CustomNode
+from resolvers.node import CustomNode, EmbeddedNode
 
 # Models
 
 
 class CustomColumnModel(Document):
+    '''CustomColumn model for mongoengine'''
     meta = {"collection": "custom_columns"}
     name = StringField(required=True)
     elements_allowed = ListField(StringField())
@@ -21,35 +22,37 @@ class CustomColumnModel(Document):
 
 
 class CustomColumnValueModel(EmbeddedDocument):
+    '''CustomColumnValue model for mongoengine'''
     custom_column = ReferenceField(CustomColumnModel)
     value = StringField()
 
 
 # Types
 class CustomColumn(MongoengineObjectType):
+    '''CustomColumn type for mongoengine'''
 
     class Meta:
         model = CustomColumnModel
         interfaces = (CustomNode,)
-        filter_fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
-        }
 
 
 class CustomColumnValue(MongoengineObjectType):
+    '''CustomColumnValue type for mongoengine'''
     class Meta:
         model = CustomColumnValueModel
-        interfaces = (CustomNode, )
+        interfaces = (EmbeddedNode, )
 
 # Mutations
 
 
 class CustomColumnValueInput(graphene.InputObjectType):
+    '''CustomColumnValue input for graphene'''
     custom_column = graphene.ID(required=True)
     value = graphene.String()
 
 
 class CustomColumnInput(graphene.InputObjectType):
+    '''CustomColumn input for graphene'''
     id = graphene.ID()
     name = graphene.String(required=True)
     elements_allowed = graphene.List(graphene.String, required=True)

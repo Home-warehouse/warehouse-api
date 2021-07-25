@@ -20,6 +20,7 @@ from resolvers.node import CustomNode
 
 
 class LocationModel(Document):
+    '''Location model for mongoengine'''
     meta = {"collection": "locations"}
     root = BooleanField()
     location_name = StringField(required=True)
@@ -34,20 +35,20 @@ class LocationModel(Document):
 
 
 class Location(MongoengineObjectType):
-
+    '''Location type for mongoengine'''
     class Meta:
         model = LocationModel
         interfaces = (CustomNode, )
         filter_fields = {
             'id': ['exact'],
-            'root': ['exact'],
-            'location_name': ['exact', 'icontains', 'istartswith']
+            'root': ['exact']
         }
 
 # Mutations
 
 
 class LocationInput(graphene.InputObjectType):
+    '''Location input for graphene'''
     id = graphene.ID()
     root = graphene.Boolean()
     location_name = graphene.String()
@@ -134,8 +135,8 @@ class DeleteLocationMutation(graphene.Mutation):
 class LocationsListsResolver(graphene.ObjectType):
     locations_list = MongoengineConnectionField(Location)
 
-    def resolve_locations_list(parent, info, **kwargs):
-        MongoengineConnectionField(Location)
+    def resolve_locations_list(parent, info, *args, **kwargs):
+        MongoengineConnectionField(Location, *args)
 
     resolve_locations_list = permissions_checker(
         resolve_locations_list, PermissionsType(allow_any="user"))
