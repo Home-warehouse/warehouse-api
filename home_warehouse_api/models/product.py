@@ -27,7 +27,7 @@ class ProductModel(Document):
 
 # Types
 class Product(MongoengineObjectType):
-    '''Product type for Mongoengine ObjectType'''
+    '''Product type for mongoengine'''
     class Meta:
         '''Product mongo object meta settings'''
         model = ProductModel

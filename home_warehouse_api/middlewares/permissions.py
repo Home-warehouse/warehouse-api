@@ -10,11 +10,14 @@ from graphql import GraphQLError
 ranks = ["user", "admin"]
 
 
+# TODO: Add enum
 class PermissionsType(BaseModel):
+    '''Permissions type'''
     allow_any: str = "user"
 
 
 def permissions_checker(fn, permissions: PermissionsType):
+    '''Check if permissions are sufficient'''
     def wrapper(*args, **kwargs):
         # DEVONLY: Bypass checking permissions
         # return fn(*args, **kwargs)
@@ -29,7 +32,7 @@ def permissions_checker(fn, permissions: PermissionsType):
             # Check how ranked user can gain access
             rank = decoded_token["rank"]
             user_rank_index = ranks.index(rank)
-            print("user rank", user_rank_index, "needed rank", ranks.index(permissions.allow_any))
+            # print("user rank", user_rank_index, "needed rank", ranks.index(permissions.allow_any))
             if ranks.index(permissions.allow_any) <= user_rank_index:
                 return fn(*args, **kwargs)
             else:

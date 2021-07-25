@@ -9,6 +9,7 @@ from services.auth import jwt_authenticate, jwt_authorize
 
 
 class LoginType(graphene.ObjectType):
+    '''Login type for graphene'''
     email = graphene.String()
     password = graphene.String()
     authenticated = graphene.Boolean()
@@ -39,6 +40,7 @@ _login = graphene.Field(
 
 
 class RefreshTokenType(graphene.ObjectType):
+    '''RefreshToken type for graphene'''
     email = graphene.String()
     password = graphene.String()
     authenticated = graphene.Boolean()

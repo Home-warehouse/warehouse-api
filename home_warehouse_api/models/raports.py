@@ -20,11 +20,13 @@ from resolvers.node import CustomNode, EmbeddedNode
 
 
 class SortRaportModel(EmbeddedDocument):
+    '''SortRaport model for mongoengine'''
     custom_column = ReferenceField(CustomColumnModel)
     value = StringField()
 
 
 class FilterRaportModel(EmbeddedDocument):
+    '''FilterRaport model for mongoengine'''
     custom_column = ReferenceField(CustomColumnModel)
     comparison = StringField()
     value = StringField()
@@ -45,19 +47,21 @@ class RaportModel(Document):
 
 # Types
 class SortRaport(MongoengineObjectType):
+    '''SortRaport type for mongoengine'''
     class Meta:
         model = SortRaportModel
         interfaces = (EmbeddedNode,)
 
 
 class FilterRaport(MongoengineObjectType):
+    '''FilterRaport type for mongoengine'''
     class Meta:
         model = FilterRaportModel
         interfaces = (EmbeddedNode,)
 
 
 class Raport(MongoengineObjectType):
-    '''Raport type for Mongoengine ObjectType'''
+    '''Raport type for mongoengine'''
     class Meta:
         '''Raport mongo object meta settings'''
         model = RaportModel

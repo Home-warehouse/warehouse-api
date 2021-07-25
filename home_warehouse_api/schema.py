@@ -59,8 +59,9 @@ try:
         serverSelectionTimeoutMS=3000
     )
     connection = connection.server_info()
-    print("Connected with databaase")
+    print("Connected with database")
 except ConnectionFailure as error:
+    print("Could not connect with database")
     print(error)
 
 

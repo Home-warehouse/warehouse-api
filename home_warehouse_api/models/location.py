@@ -20,6 +20,7 @@ from resolvers.node import CustomNode
 
 
 class LocationModel(Document):
+    '''Location model for mongoengine'''
     meta = {"collection": "locations"}
     root = BooleanField()
     location_name = StringField(required=True)
@@ -34,7 +35,7 @@ class LocationModel(Document):
 
 
 class Location(MongoengineObjectType):
-
+    '''Location type for mongoengine'''
     class Meta:
         model = LocationModel
         interfaces = (CustomNode, )
@@ -47,6 +48,7 @@ class Location(MongoengineObjectType):
 
 
 class LocationInput(graphene.InputObjectType):
+    '''Location input for graphene'''
     id = graphene.ID()
     root = graphene.Boolean()
     location_name = graphene.String()
