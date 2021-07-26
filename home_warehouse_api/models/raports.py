@@ -95,6 +95,7 @@ class CreateRaportMutation(graphene.Mutation):
     class Arguments:
         raport_details = RaportInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, raport_details=None):
         raport = RaportModel(
             raport_name=raport_details.raport_name,
@@ -109,9 +110,6 @@ class CreateRaportMutation(graphene.Mutation):
         raport.save()
         return CreateRaportMutation(raport=raport)
 
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
-
 # TODO: Only users[0] of raport can delete raport - even if it is public.
 
 
@@ -124,6 +122,7 @@ class UpdateRaportMutation(graphene.Mutation):
         id = graphene.String(required=True)
         raport_details = RaportInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None, raport_details=None):
         found_objects = list(RaportModel.objects(**{"id": id}))
         if len(found_objects) > 0:
@@ -132,8 +131,6 @@ class UpdateRaportMutation(graphene.Mutation):
             raport.update(**raport_details)
             return UpdateRaportMutation(raport=raport, modified=True)
         return UpdateRaportMutation(raport=id, modified=False)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class DeleteRaportMutation(graphene.Mutation):
@@ -143,6 +140,7 @@ class DeleteRaportMutation(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None):
         found_objects = list(RaportModel.objects(**{"id": id}))
         if len(found_objects) > 0:
@@ -150,17 +148,12 @@ class DeleteRaportMutation(graphene.Mutation):
             return DeleteRaportMutation(id=id, deleted=True)
         return DeleteRaportMutation(id=id, deleted=False)
 
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
-
 # Resolvers
 
 
 class RaportsListsResolver(graphene.ObjectType):
     raports_list = MongoengineConnectionField(Raport)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def resolve_raports_list(parent, info, *args, **kwargs):
         MongoengineConnectionField(Raport, *args)
-
-    resolve_raports_list = permissions_checker(
-        resolve_raports_list, PermissionsType(allow_any="user"))

@@ -64,6 +64,7 @@ class CreateLocationMutation(graphene.Mutation):
     class Arguments:
         location_details = LocationInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, location_details=None):
         location = LocationModel(
             root=location_details.root,
@@ -76,8 +77,6 @@ class CreateLocationMutation(graphene.Mutation):
         location.save()
 
         return CreateLocationMutation(location=location)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class UpdateLocationMutation(graphene.Mutation):
@@ -89,6 +88,7 @@ class UpdateLocationMutation(graphene.Mutation):
         id = graphene.String(required=True)
         location_details = LocationInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None, location_details=None):
         found_objects = list(LocationModel.objects(**{"id": id}))
         if len(found_objects) == 1:
@@ -109,8 +109,6 @@ class UpdateLocationMutation(graphene.Mutation):
             location.update(**location_details)
             return UpdateLocationMutation(location=location, modified=True)
         return UpdateLocationMutation(location=id, modified=False)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class DeleteLocationMutation(graphene.Mutation):
@@ -120,14 +118,13 @@ class DeleteLocationMutation(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None):
         found_objects = list(LocationModel.objects(**{"id": id}))
         if len(found_objects) > 0:
             LocationModel.delete(found_objects[0])
             return DeleteLocationMutation(id=id, deleted=True)
         return DeleteLocationMutation(id=id, deleted=False)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 # Resolvers
 
@@ -135,8 +132,6 @@ class DeleteLocationMutation(graphene.Mutation):
 class LocationsListsResolver(graphene.ObjectType):
     locations_list = MongoengineConnectionField(Location)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def resolve_locations_list(parent, info, *args, **kwargs):
         MongoengineConnectionField(Location, *args)
-
-    resolve_locations_list = permissions_checker(
-        resolve_locations_list, PermissionsType(allow_any="user"))
