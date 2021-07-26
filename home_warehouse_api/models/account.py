@@ -78,6 +78,7 @@ class UpdateAccountMutation(graphene.Mutation):
         account_details = AccountInput(required=True)
         old_password = graphene.String()
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, account_details=None, old_password=None):
         request: Request = Request(info.context["request"])
         object_id = jwt_authorize(request.headers["authorization"])[
@@ -99,13 +100,12 @@ class UpdateAccountMutation(graphene.Mutation):
             return UpdateAccountMutation(account=account, modified=True)
         return UpdateAccountMutation(account=object_id, modified=False)
 
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class DeleteAccountMutation(graphene.Mutation):
     deleted = graphene.Boolean()
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info):
         request: Request = Request(info.context["request"])
         object_id = jwt_authorize(request.headers["authorization"])[
@@ -119,8 +119,6 @@ class DeleteAccountMutation(graphene.Mutation):
             return DeleteAccountMutation(deleted=True)
         return DeleteAccountMutation(deleted=False)
 
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 # Resolvers
 
@@ -128,11 +126,9 @@ class DeleteAccountMutation(graphene.Mutation):
 class AccountsListsResolver(graphene.ObjectType):
     accounts_list = MongoengineConnectionField(Account)
 
+    @permissions_checker(PermissionsType(allow_any="admin"))
     def resolve_accounts_list(parent, info, *args, **kwargs):
         MongoengineConnectionField(Account, *args)
-
-    resolve_accounts_list = permissions_checker(
-        resolve_accounts_list, PermissionsType(allow_any="admin"))
 
 
 class MyAccountType(graphene.ObjectType):

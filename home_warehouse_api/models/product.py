@@ -51,6 +51,7 @@ class CreateProductMutation(graphene.Mutation):
     class Arguments:
         product_details = ProductInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, product_details=None):
         product = ProductModel(
             product_name=product_details.product_name,
@@ -60,9 +61,6 @@ class CreateProductMutation(graphene.Mutation):
         )
         product.save()
         return CreateProductMutation(product=product)
-
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class UpdateProductMutation(graphene.Mutation):
@@ -74,6 +72,7 @@ class UpdateProductMutation(graphene.Mutation):
         id = graphene.String(required=True)
         product_details = ProductInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None, product_details=None):
         found_objects = list(ProductModel.objects(**{"id": id}))
         if len(found_objects) > 0:
@@ -82,8 +81,6 @@ class UpdateProductMutation(graphene.Mutation):
             product.update(**product_details)
             return UpdateProductMutation(product=product, modified=True)
         return UpdateProductMutation(product=id, modified=False)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class DeleteProductMutation(graphene.Mutation):
@@ -93,6 +90,7 @@ class DeleteProductMutation(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None):
         found_objects = list(ProductModel.objects(**{"id": id}))
         if len(found_objects) > 0:
@@ -100,8 +98,6 @@ class DeleteProductMutation(graphene.Mutation):
             return DeleteProductMutation(id=id, deleted=True)
         return DeleteProductMutation(id=id, deleted=False)
 
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 # Resolvers
 
@@ -109,11 +105,9 @@ class DeleteProductMutation(graphene.Mutation):
 class ProductsListsResolver(graphene.ObjectType):
     products_list = MongoengineConnectionField(Product)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def resolve_products_list(parent, info, *args, **kwargs):
         MongoengineConnectionField(Product, *args)
-
-    resolve_products_list = permissions_checker(
-        resolve_products_list, PermissionsType(allow_any="user"))
 
 
 class ProductsListFilteredResolver(graphene.ObjectType):
@@ -131,6 +125,7 @@ class ProductsListFilteredResolver(graphene.ObjectType):
         limit=graphene.Int()
     )
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def resolve_filter_sort_products(parent, info, show_custom_columns, filter_by, sort_by, limit=20):
         parsed_ids_show = list(
             map(lambda id: ObjectId(id), show_custom_columns))
@@ -176,6 +171,3 @@ class ProductsListFilteredResolver(graphene.ObjectType):
         cursor = ProductModel.objects.aggregate(*pipeline)
         parsed = list(map(lambda doc: ProductModel._from_son(doc), cursor))
         return parsed
-
-    resolve_filter_sort_products = permissions_checker(
-        resolve_filter_sort_products, PermissionsType(allow_any="user"))

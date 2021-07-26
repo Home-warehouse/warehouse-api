@@ -65,6 +65,7 @@ class CreateCustomColumnMutation(graphene.Mutation):
     class Arguments:
         custom_column_details = CustomColumnInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, custom_column_details=None):
         custom_column = CustomColumnModel(
             name=custom_column_details.name,
@@ -73,9 +74,6 @@ class CreateCustomColumnMutation(graphene.Mutation):
         )
         custom_column.save()
         return CreateCustomColumnMutation(custom_column=custom_column)
-
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class UpdateCustomColumnMutation(graphene.Mutation):
@@ -87,6 +85,7 @@ class UpdateCustomColumnMutation(graphene.Mutation):
         id = graphene.String(required=True)
         custom_column_details = CustomColumnInput(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None, custom_column_details=None):
         found_objects = list(CustomColumnModel.objects(**{"id": id}))
         if len(found_objects) > 0:
@@ -95,8 +94,6 @@ class UpdateCustomColumnMutation(graphene.Mutation):
             custom_column.update(**custom_column_details)
             return UpdateCustomColumnMutation(custom_column=custom_column, modified=True)
         return UpdateCustomColumnMutation(custom_column=id, modified=False)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 
 
 class DeleteCustomColumnnMutation(graphene.Mutation):
@@ -106,22 +103,19 @@ class DeleteCustomColumnnMutation(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None):
         found_objects = list(CustomColumnModel.objects(**{"id": id}))
         if len(found_objects) > 0:
             CustomColumnModel.delete(found_objects[0])
             return DeleteCustomColumnnMutation(id=id, deleted=True)
         return DeleteCustomColumnnMutation(id=id, deleted=False)
-    mutate = permissions_checker(
-        fn=mutate, permissions=PermissionsType(allow_any="user"))
 # Resolvers
 
 
 class CustomColumnsListsResolver(graphene.ObjectType):
     custom_columns_list = MongoengineConnectionField(CustomColumn)
 
+    @permissions_checker(PermissionsType(allow_any="user"))
     def resolve_custom_columns_list(parent, info, *args, **kwargs):
         MongoengineConnectionField(CustomColumn, *args)
-
-    resolve_custom_columns_list = permissions_checker(
-        resolve_custom_columns_list, PermissionsType(allow_any="user"))

@@ -1,8 +1,12 @@
+from os import getenv
 from base64 import b64encode
 import datetime
 import jwt
 
-JWT_SECRET = "test_secret"
+from dotenv import load_dotenv
+load_dotenv()
+
+JWT_SECRET = getenv("API_JWT_SECRET")
 JWT_SECRET_ENCODED = b64encode(JWT_SECRET.encode("utf-8"))
 JWT_EXP_MINUTES = 90
 
