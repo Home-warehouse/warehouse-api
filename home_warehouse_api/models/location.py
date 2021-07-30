@@ -1,5 +1,4 @@
 import graphene
-from graphene.types.scalars import Boolean
 
 from graphene_mongo import MongoengineObjectType
 
@@ -121,7 +120,10 @@ class DeleteLocationMutation(graphene.Mutation):
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, id=None):
         found_objects = list(LocationModel.objects(**{"id": id}))
+        products = list(found_objects[0].products)
+        parsed = list(map(lambda doc: doc.id, products))
         if len(found_objects) > 0:
+            ProductModel.objects(id__in=parsed).delete()
             LocationModel.delete(found_objects[0])
             return DeleteLocationMutation(id=id, deleted=True)
         return DeleteLocationMutation(id=id, deleted=False)
