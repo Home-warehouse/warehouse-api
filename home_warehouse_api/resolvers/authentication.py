@@ -43,7 +43,7 @@ class RefreshTokenType(graphene.ObjectType):
     '''RefreshToken type for graphene'''
     email = graphene.String()
     password = graphene.String()
-    authenticated = graphene.Boolean()
+    refreshed = graphene.Boolean()
     access_token = graphene.String()
 
 
@@ -51,7 +51,6 @@ def resolve_refresh_token(parent, info):
     '''Refresh token resolver'''
     request: Request = Request(info.context["request"])
     decoded = jwt_authorize(request.headers["authorization"])
-    print(decoded)
     if decoded:
         if datetime.datetime.fromtimestamp(decoded['exp']) > datetime.datetime.utcnow():
             return RefreshTokenType(refreshed=True, access_token=jwt_authenticate(
