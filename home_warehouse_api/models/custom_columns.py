@@ -18,6 +18,7 @@ class CustomColumnModel(Document):
     meta = {"collection": "custom_columns"}
     name = StringField(required=True)
     elements_allowed = ListField(StringField())
+    values = ListField(StringField())
     data_type = StringField()
 
 
@@ -56,6 +57,7 @@ class CustomColumnInput(graphene.InputObjectType):
     id = graphene.ID()
     name = graphene.String(required=True)
     elements_allowed = graphene.List(graphene.String, required=True)
+    values = graphene.List(graphene.String, required=True)
     data_type = graphene.String(required=True)
 
 
@@ -70,6 +72,7 @@ class CreateCustomColumnMutation(graphene.Mutation):
         custom_column = CustomColumnModel(
             name=custom_column_details.name,
             elements_allowed=custom_column_details.elements_allowed,
+            values=custom_column_details.values,
             data_type=custom_column_details.data_type,
         )
         custom_column.save()
