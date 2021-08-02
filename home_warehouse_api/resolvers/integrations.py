@@ -61,7 +61,11 @@ class evernote(integration):
             for cc_val in cc_values:
                 product += cc_val + ' '
             lines.append(product)
-        return default_note().create_note(lines)
+        if kwargs['noteType'] == "NOTE":
+            return default_note(kwargs['noteTitle']).create_note(lines)
+        if kwargs['noteType'] == "TODO":
+            return default_note(kwargs['noteTitle']).create_todo(lines)
+        return False
 
 
 def resolve_evernote(parent, info, **kwargs):
@@ -74,6 +78,14 @@ _evernoteRaportResolver = raportField(
     description="Evernote raport integration",
     type=EvernoteType,
     resolver=resolve_evernote,
+    noteTitle=graphene.String(
+        required=True,
+        description="Note title"
+        ),
+    noteType=graphene.String(
+        required=True,
+        description="Can take values: 'TODO', 'NOTE'"
+        ),
     **product_filter_fields
 )
 
