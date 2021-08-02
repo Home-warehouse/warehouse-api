@@ -110,20 +110,24 @@ class ProductsListsResolver(graphene.ObjectType):
         MongoengineConnectionField(Product, *args)
 
 
+product_filter_fields = {
+        'show_custom_columns': graphene.List(
+                    graphene.String,
+                    description="List of IDs of custom columns which are present in products"
+        ),
+        'filter_by': graphene.Argument(graphene.List(
+            FilterRaportInput), required=False),
+        'sort_by': graphene.Argument(SortRaportInput),
+        'limit': graphene.Int()
+    }
+
+
 class ProductsListFilteredResolver(graphene.ObjectType):
     products = MongoengineConnectionField(Product)
 
     filter_sort_products = graphene.List(
         lambda: Product,
-        # ONLY IF HAS COLUMNS
-        show_custom_columns=graphene.List(
-                graphene.String,
-                description="List of IDs of custom columns which are present in products"
-        ),
-        filter_by=graphene.Argument(graphene.List(
-            FilterRaportInput), required=False),
-        sort_by=graphene.Argument(SortRaportInput),
-        limit=graphene.Int()
+        **product_filter_fields
     )
 
     @permissions_checker(PermissionsType(allow_any="user"))

@@ -1,10 +1,9 @@
 import json
 import graphene
-from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
 
 from middlewares.integrations_apps.evernote import default_note
-from models.product import ProductModel, ProductsListFilteredResolver
+from models.product import ProductModel, ProductsListFilteredResolver, product_filter_fields
 
 
 class parseRaportData:
@@ -75,14 +74,7 @@ _evernoteRaportResolver = raportField(
     description="Evernote raport integration",
     type=EvernoteType,
     resolver=resolve_evernote,
-    show_custom_columns=graphene.List(
-                graphene.String,
-                description="List of IDs of custom columns which are present in products"
-    ),
-    filter_by=graphene.Argument(graphene.List(
-        FilterRaportInput), required=False),
-    sort_by=graphene.Argument(SortRaportInput),
-    limit=graphene.Int()
+    **product_filter_fields
 )
 
 
