@@ -112,12 +112,13 @@ class ProductsListsResolver(graphene.ObjectType):
 
 class ProductsListFilteredResolver(graphene.ObjectType):
     products = MongoengineConnectionField(Product)
+
     filter_sort_products = graphene.List(
         lambda: Product,
         # ONLY IF HAS COLUMNS
         show_custom_columns=graphene.List(
-            graphene.String,
-            description="List of IDs of custom columns which are present in products"
+                graphene.String,
+                description="List of IDs of custom columns which are present in products"
         ),
         filter_by=graphene.Argument(graphene.List(
             FilterRaportInput), required=False),

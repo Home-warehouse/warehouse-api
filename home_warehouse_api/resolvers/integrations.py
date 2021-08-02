@@ -1,12 +1,13 @@
 import json
 import graphene
+from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
 
 from middlewares.integrations_apps.evernote import default_note
 from models.product import ProductModel, ProductsListFilteredResolver
 
 
-class raportDataParse:
+class parseRaportData:
     def parse_cc(self, cc):
         cc_details = CustomColumnModel.to_json(cc['custom_column'])
         return {"custom_column": json.loads(cc_details), "value": cc['value']}
@@ -21,8 +22,19 @@ class raportDataParse:
 
 
 class integration:
-    def raport(self):
-        return self
+    '''Boilerplate class for all integrations'''
+    def raport():
+        pass
+
+
+def raportField(description, type, resolver, **kwargs):
+    '''Create raport Field for graphene'''
+    return graphene.Field(
+        description=description,
+        type=type,
+        resolver=resolver,
+        **kwargs
+    )
 
 
 class EvernoteType(graphene.ObjectType):
@@ -30,16 +42,16 @@ class EvernoteType(graphene.ObjectType):
 
 
 class evernote(integration):
-    def raport():
+    def raport(**kwargs):
         raportData = ProductsListFilteredResolver.resolve_filter_sort_products(
             parent=None,
             info=None,
-            show_custom_columns=["60fc0fe0d5849902b88653cb", "60fc29d5d5849902b88653d0"],
-            sort_by={"custom_column": "60fc0fe0d5849902b88653cb", "value": "-1"},
-            filter_by=[],
-            limit=30
+            show_custom_columns=kwargs['show_custom_columns'],
+            filter_by=kwargs['filter_by'],
+            sort_by=kwargs['sort_by'],
+            limit=kwargs['limit']
         )
-        raportData = raportDataParse().parseData(raportData=raportData)
+        raportData = parseRaportData().parseData(raportData=raportData)
         lines = []
         for parentNode in raportData:
             cc_values = map(
@@ -53,18 +65,26 @@ class evernote(integration):
         return default_note().create_note(lines)
 
 
-def resolve_evernote(parent, info):
-    if evernote.raport():
+def resolve_evernote(parent, info, **kwargs):
+    if evernote.raport(**kwargs):
         return EvernoteType(created_note=True)
     return EvernoteType(created_note=False)
 
 
-_evernote = graphene.Field(
-    description="Try Evernote",
+_evernoteRaportResolver = raportField(
+    description="Evernote raport integration",
     type=EvernoteType,
-    resolver=resolve_evernote
+    resolver=resolve_evernote,
+    show_custom_columns=graphene.List(
+                graphene.String,
+                description="List of IDs of custom columns which are present in products"
+    ),
+    filter_by=graphene.Argument(graphene.List(
+        FilterRaportInput), required=False),
+    sort_by=graphene.Argument(SortRaportInput),
+    limit=graphene.Int()
 )
 
 
 class IntegrationsResolvers(graphene.ObjectType):
-    evernote = _evernote
+    evernoteRaportResolver = _evernoteRaportResolver
