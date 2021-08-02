@@ -8,3 +8,6 @@ Start guide (with docker):
     #. Go to ``./warehouse-api/docker/`` directory and edit .env file
     #. In the same directory run both ``docker-compose build`` and ``docker-compose up -d``
     #. Access HomeWarehouse from web browser under given host
+
+Before running project, remember to:
+``export PYTHONPATH=integrations/evernote/lib/``

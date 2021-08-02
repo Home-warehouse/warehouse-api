@@ -48,8 +48,7 @@ from models.account import (
 
 from resolvers.authentication import AuthenticationResolvers
 
-from dotenv import load_dotenv
-load_dotenv()
+from resolvers.integrations import IntegrationsResolvers
 
 # Connect with database
 try:
@@ -97,6 +96,7 @@ class Query(
     AccountsListsResolver,
     AccountResolvers,
     AuthenticationResolvers,
+    IntegrationsResolvers,
     graphene.ObjectType
 ):
     '''Resolvers list'''

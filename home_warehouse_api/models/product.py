@@ -155,15 +155,15 @@ class ProductsListFilteredResolver(graphene.ObjectType):
                     "$filter": {
                         "input": "$custom_columns",
                         "as": "cc",
-                        "cond": {sort_by.value:
+                        "cond": {sort_by['value']:
                                  ["$$cc.custom_column",
-                                  ObjectId(sort_by.custom_column)
+                                  ObjectId(sort_by['custom_column'])
                                   ]
                                  }
                     }
                 }
             }},
-            {"$sort": {"order": int(sort_by.value)}},
+            {"$sort": {"order": int(sort_by['value'])}},
             {"$project": {"order": False}},
             # LIMIT
             {"$limit": limit},
