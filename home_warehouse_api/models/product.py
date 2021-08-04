@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 
 from mongoengine import Document
 from mongoengine.fields import EmbeddedDocumentListField, StringField
+from middlewares.automatizations import automatizations_checker
 
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.common import FilterRaportInput, SortRaportInput
@@ -79,6 +80,7 @@ class UpdateProductMutation(graphene.Mutation):
             product_details["id"] = id
             product = ProductModel(**product_details)
             product.update(**product_details)
+            automatizations_checker('product', id, product_details)
             return UpdateProductMutation(product=product, modified=True)
         return UpdateProductMutation(product=id, modified=False)
 

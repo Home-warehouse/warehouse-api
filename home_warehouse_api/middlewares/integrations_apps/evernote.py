@@ -35,6 +35,6 @@ class default_note:
 
     def create_todo(self, lines: list(str())):
         for line in lines:
-            self.note.content += '<en-todo/>' + line
+            self.note.content += '<en-todo/>' + line + '<br/>'
         self.end_note()
         return True

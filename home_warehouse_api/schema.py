@@ -3,6 +3,7 @@ import graphene
 
 from mongoengine import connect
 from pymongo.errors import ConnectionFailure
+from models.automatizations import CreateAutomatizationMutation
 
 # Models
 from models.custom_columns import (
@@ -85,6 +86,8 @@ class Mutation(graphene.ObjectType):
     create_raport = CreateRaportMutation.Field()
     modify_raport = UpdateRaportMutation.Field()
     delete_raport = DeleteRaportMutation.Field()
+
+    create_automatization = CreateAutomatizationMutation.Field()
 
 
 class Query(
