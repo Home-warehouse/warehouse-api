@@ -7,8 +7,8 @@ from services.integration_runners.evernote import evernote
 
 class ElementType(str, Enum):
     product = 'product'
-    location = 'location'
-    raport = 'raport'
+    # location = 'location'
+    # raport = 'raport'
 
 
 def automatizations_checker(element: ElementType, **kwargs):

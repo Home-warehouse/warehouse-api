@@ -7,4 +7,10 @@ class integration:
         self.config = json.loads(config)
 
     def raport(self):
-        pass
+        ...
+
+    def product(self):
+        ...
+
+    def location(self):
+        ...

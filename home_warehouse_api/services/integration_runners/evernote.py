@@ -1,4 +1,3 @@
-import json
 import graphene
 from services.integration_runners.integration import integration
 from services.integrations_apps.evernote import default_note
@@ -9,7 +8,7 @@ class EvernoteType(graphene.ObjectType):
 
 
 class evernote(integration):
-    def raport(self, ProductsListFilteredResolver, parseRaportData, *args, **kwargs):
+    def raport(self, ProductsListFilteredResolver, parseRaportData, **kwargs):
         kwargs['integrated_element']['show_custom_columns'] = list(
             map(lambda show_cc: show_cc['$oid'],
                 kwargs['integrated_element']['show_custom_columns'])
@@ -40,7 +39,7 @@ class evernote(integration):
                 product += cc_val + ' '
             lines.append(product)
         if self.config['noteType'] == "NOTE":
-            return default_note(self.config['noteTitle']).create_note(lines)
+            return default_note(self.config['noteTitle'], lines).create_note()
         if self.config['noteType'] == "TODO":
-            return default_note(self.config['noteTitle']).create_todo(lines)
+            return default_note(self.config['noteTitle'], lines).create_todo()
         return False

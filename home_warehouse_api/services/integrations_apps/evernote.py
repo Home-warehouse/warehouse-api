@@ -12,8 +12,9 @@ class default_note:
     noteStore = client.get_note_store()
     note = Types.Note()
 
-    def __init__(self, title):
+    def __init__(self, title, lines: list(str())):
         self.title = title
+        self.lines = lines
         self.start_note()
 
     def start_note(self):
@@ -26,15 +27,14 @@ class default_note:
     def end_note(self):
         self.note.content += '</en-note>'
         self.noteStore.createNote(self.note)
+        return True
 
-    def create_note(self, lines: list(str())):
-        for line in lines:
+    def create_note(self):
+        for line in self.lines:
             self.note.content += line + '<br/>'
-        self.end_note()
-        return True
+        return self.end_note()
 
-    def create_todo(self, lines: list(str())):
-        for line in lines:
+    def create_todo(self):
+        for line in self.lines:
             self.note.content += '<en-todo/>' + line + '<br/>'
-        self.end_note()
-        return True
+        return self.end_note()
