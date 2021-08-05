@@ -1,3 +1,4 @@
+import json
 import graphene
 
 from graphene_mongo.fields import MongoengineConnectionField
@@ -10,9 +11,9 @@ from mongoengine.fields import EmbeddedDocumentListField, StringField
 from middlewares.automatizations import automatizations_checker
 
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.common import FilterRaportInput, SortRaportInput
-from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
+from models.custom_columns import CustomColumnModel, CustomColumnValueInput, CustomColumnValueModel
 from resolvers.node import CustomNode
+from models.common import product_filter_fields
 
 # Models
 
@@ -61,6 +62,9 @@ class CreateProductMutation(graphene.Mutation):
             custom_columns=product_details.custom_columns
         )
         product.save()
+        automatizations_checker('product',
+                                ProductsListFilteredResolver=ProductsListFilteredResolver,
+                                parseRaportData=parseRaportData)
         return CreateProductMutation(product=product)
 
 
@@ -80,7 +84,8 @@ class UpdateProductMutation(graphene.Mutation):
             product_details["id"] = id
             product = ProductModel(**product_details)
             product.update(**product_details)
-            automatizations_checker('product', id, product_details)
+            # automatizations_checker('product', id, product_details, ProductsListFilteredResolver)
+            # kwargs.ProductsListFilteredResolver, kwargs.parseRaportData, integrated_element
             return UpdateProductMutation(product=product, modified=True)
         return UpdateProductMutation(product=id, modified=False)
 
@@ -112,18 +117,6 @@ class ProductsListsResolver(graphene.ObjectType):
         MongoengineConnectionField(Product, *args)
 
 
-product_filter_fields = {
-        'show_custom_columns': graphene.List(
-                    graphene.String,
-                    description="List of IDs of custom columns which are present in products"
-        ),
-        'filter_by': graphene.Argument(graphene.List(
-            FilterRaportInput), required=False),
-        'sort_by': graphene.Argument(SortRaportInput),
-        'limit': graphene.Int()
-    }
-
-
 class ProductsListFilteredResolver(graphene.ObjectType):
     products = MongoengineConnectionField(Product)
 
@@ -135,7 +128,7 @@ class ProductsListFilteredResolver(graphene.ObjectType):
     @permissions_checker(PermissionsType(allow_any="user"))
     def resolve_filter_sort_products(parent, info, show_custom_columns, filter_by, sort_by, limit=20):
         parsed_ids_show = list(
-            map(lambda id: ObjectId(id), show_custom_columns))
+            map(lambda doc: ObjectId(doc), show_custom_columns))
         parsed_filters = list(
             map(lambda obj: {"custom_columns.value": {str(obj.comparison): obj.value}}, filter_by))
 
@@ -178,3 +171,17 @@ class ProductsListFilteredResolver(graphene.ObjectType):
         cursor = ProductModel.objects.aggregate(*pipeline)
         parsed = list(map(lambda doc: ProductModel._from_son(doc), cursor))
         return parsed
+
+
+class parseRaportData:
+    def parse_cc(self, cc):
+        cc_details = CustomColumnModel.to_json(cc['custom_column'])
+        return {"custom_column": json.loads(cc_details), "value": cc['value']}
+
+    def parse_product(self, product):
+        cc = list(map(lambda cc: self.parse_cc(cc), product['custom_columns']))
+        product['custom_columns'] = cc
+        return json.loads(ProductModel.to_json(product))
+
+    def parseData(self, raportData):
+        return list(map(lambda product: self.parse_product(product), raportData))

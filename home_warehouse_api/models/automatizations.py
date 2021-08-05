@@ -1,10 +1,11 @@
 import graphene
+from graphene.types.json import JSONString
 
 from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
 
 from mongoengine import Document
-from mongoengine.fields import GenericReferenceField, ListField, StringField
+from mongoengine.fields import DictField, GenericReferenceField, ListField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
 # from models.location import LocationModel
@@ -20,6 +21,7 @@ class AutomatizationModel(Document):
     meta = {"collection": "automatizations"}
     app = StringField()
     name = StringField()
+    config = StringField()
     element_integrated = GenericReferenceField(choices=[RaportModel])
     elements_monitored = ListField(StringField())
 
@@ -41,6 +43,10 @@ class elementType(graphene.Enum):
     RAPORT = 'raport'
 
 
+class appType(graphene.Enum):
+    EVERNOTE = 'evernote'
+
+
 class ElementInput(graphene.InputObjectType):
     '''Element input for graphene'''
     elementType = graphene.InputField(elementType, required=True)
@@ -51,9 +57,10 @@ class AutomatizationInput(graphene.InputObjectType):
     '''Automatization input for graphene'''
     id = graphene.ID()
     name = graphene.String(required=True, description="Automatization name")
-    app = graphene.String(required=True, description="Integration app used for automatization")
+    app = graphene.InputField(appType, required=True, description="Integration app used for automatization")
+    config = graphene.String(required=True, description="Integration configuration as JSON string")
     element_integrated = graphene.InputField(ElementInput, required=True)
-    elements_monitored = graphene.InputField(graphene.List(graphene.String),
+    elements_monitored = graphene.InputField(graphene.List(elementType),
                                              required=True, description="One of: 'product', 'localization; ")
 
 
@@ -83,6 +90,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
         automatization = AutomatizationModel(
             app=automatization_details.app,
             name=automatization_details.name,
+            config=automatization_details.config,
             element_integrated=element_integrated,
             elements_monitored=automatization_details.elements_monitored,
         )
