@@ -98,6 +98,24 @@ class CreateAutomatizationMutation(graphene.Mutation):
         return CreateAutomatizationMutation(automatization=automatization)
 
 
+class DeleteAutomatizationMutation(graphene.Mutation):
+    id = graphene.ID(required=True)
+    deleted = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    @permissions_checker(PermissionsType(allow_any="user"))
+    def mutate(parent, info, id=None):
+        found_objects = list(AutomatizationModel.objects(**{"id": id}))
+        if len(found_objects) > 0:
+            AutomatizationModel.delete(found_objects[0])
+            return DeleteAutomatizationMutation(id=id, deleted=True)
+        return DeleteAutomatizationMutation(id=id, deleted=False)
+
+# Resolvers
+
+
 class AutomatizationsListResolver(graphene.ObjectType):
     automatizations_list = MongoengineConnectionField(Automatization)
 

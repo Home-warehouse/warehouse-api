@@ -3,7 +3,7 @@ import graphene
 
 from mongoengine import connect
 from pymongo.errors import ConnectionFailure
-from models.automatizations import CreateAutomatizationMutation
+from models.automatizations import AutomatizationsListResolver, CreateAutomatizationMutation, DeleteAutomatizationMutation
 
 # Models
 from models.custom_columns import (
@@ -88,6 +88,7 @@ class Mutation(graphene.ObjectType):
     delete_raport = DeleteRaportMutation.Field()
 
     create_automatization = CreateAutomatizationMutation.Field()
+    delete_automatization = DeleteAutomatizationMutation.Field()
 
 
 class Query(
@@ -100,6 +101,7 @@ class Query(
     AccountResolvers,
     AuthenticationResolvers,
     IntegrationsResolvers,
+    AutomatizationsListResolver,
     graphene.ObjectType
 ):
     '''Resolvers list'''

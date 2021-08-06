@@ -2,6 +2,7 @@ import graphene
 
 from models.common import product_filter_fields
 from services.integration_runners.evernote import evernote
+from models.product import ProductsListFilteredResolver, parseRaportData
 
 
 def raportField(description, type, resolver, **kwargs):
@@ -19,7 +20,7 @@ class EvernoteType(graphene.ObjectType):
 
 
 def resolve_evernote(parent, info, **kwargs):
-    if evernote.raport(**kwargs):
+    if evernote.raport(parent, ProductsListFilteredResolver, parseRaportData, **kwargs):
         return EvernoteType(created_note=True)
     return EvernoteType(created_note=False)
 
