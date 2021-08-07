@@ -20,7 +20,15 @@ class EvernoteType(graphene.ObjectType):
 
 
 def resolve_evernote(parent, info, **kwargs):
-    if evernote.raport(parent, ProductsListFilteredResolver, parseRaportData, **kwargs):
+    new_kwargs = {
+        'integrated_element': dict((key, value) for key, value in kwargs.items())
+    }
+    new_kwargs['integrated_element']['short_results'] = new_kwargs['integrated_element']['limit']
+
+    if evernote(kwargs.get('config')).raport(
+        ProductsListFilteredResolver,
+        parseRaportData,
+            **new_kwargs):
         return EvernoteType(created_note=True)
     return EvernoteType(created_note=False)
 
@@ -29,14 +37,7 @@ _evernoteRaportResolver = raportField(
     description="Evernote raport integration",
     type=EvernoteType,
     resolver=resolve_evernote,
-    noteTitle=graphene.String(
-        required=True,
-        description="Note title"
-        ),
-    noteType=graphene.String(
-        required=True,
-        description="Can take values: 'TODO', 'NOTE'"
-        ),
+    config=graphene.String(required="True"),
     **product_filter_fields
 )
 

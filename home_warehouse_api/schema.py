@@ -3,7 +3,11 @@ import graphene
 
 from mongoengine import connect
 from pymongo.errors import ConnectionFailure
-from models.automatizations import AutomatizationsListResolver, CreateAutomatizationMutation, DeleteAutomatizationMutation
+from models.automatizations import (
+    AutomatizationsListResolver,
+    CreateAutomatizationMutation,
+    DeleteAutomatizationMutation
+)
 
 # Models
 from models.custom_columns import (

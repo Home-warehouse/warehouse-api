@@ -9,14 +9,16 @@ class EvernoteType(graphene.ObjectType):
 
 class evernote(integration):
     def raport(self, ProductsListFilteredResolver, parseRaportData, **kwargs):
-        kwargs['integrated_element']['show_custom_columns'] = list(
-            map(lambda show_cc: show_cc['$oid'],
-                kwargs['integrated_element']['show_custom_columns'])
-        )
-        kwargs['integrated_element']['sort_by'] = {
-            'custom_column': kwargs['integrated_element']['sort_by']['custom_column']['$oid'],
-            'value': kwargs['integrated_element']['sort_by']['value']
-        }
+
+        if type(kwargs['integrated_element']['show_custom_columns'][0]) is not str:
+            kwargs['integrated_element']['show_custom_columns'] = list(
+                map(lambda show_cc: show_cc['$oid'],
+                    kwargs['integrated_element']['show_custom_columns'])
+            )
+            kwargs['integrated_element']['sort_by'] = {
+                'custom_column': kwargs['integrated_element']['sort_by']['custom_column']['$oid'],
+                'value': kwargs['integrated_element']['sort_by']['value']
+            }
 
         raportData = ProductsListFilteredResolver.resolve_filter_sort_products(
             parent=None,
