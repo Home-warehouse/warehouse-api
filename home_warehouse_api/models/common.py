@@ -30,7 +30,6 @@ import graphene
 #         if self == filterByEnum.LESSER:
 #             return 'Comparison returns true if its lesser'
 
-
 class SortRaportInput(graphene.InputObjectType):
     custom_column = graphene.ID()
     value = graphene.String()
@@ -40,3 +39,15 @@ class FilterRaportInput(graphene.InputObjectType):
     custom_column = graphene.ID()
     comparison = graphene.String()
     value = graphene.String()
+
+
+product_filter_fields = {
+        'show_custom_columns': graphene.List(
+                    graphene.String,
+                    description="List of IDs of custom columns which are present in products"
+        ),
+        'filter_by': graphene.Argument(graphene.List(
+            FilterRaportInput), required=False),
+        'sort_by': graphene.Argument(SortRaportInput),
+        'limit': graphene.Int()
+    }

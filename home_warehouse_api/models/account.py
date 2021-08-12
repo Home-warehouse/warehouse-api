@@ -101,7 +101,6 @@ class UpdateAccountMutation(graphene.Mutation):
         return UpdateAccountMutation(account=object_id, modified=False)
 
 
-
 class DeleteAccountMutation(graphene.Mutation):
     deleted = graphene.Boolean()
 
