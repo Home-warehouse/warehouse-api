@@ -36,9 +36,8 @@ class Automatization(MongoengineObjectType):
 
 class elementType(graphene.Enum):
     PRODUCT = 'product'
-    CUSTOM_COLUMN = 'custom_column'
     LOCATION = 'location'
-    RAPORT = 'raport'
+    CUSTOM_COLUMN = 'custom_column'
 
 
 class appType(graphene.Enum):

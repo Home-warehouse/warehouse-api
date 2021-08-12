@@ -8,6 +8,7 @@ from services.integration_runners.evernote import evernote
 class ElementType(str, Enum):
     product = 'product'
     location = 'location'
+    custom_column = 'custom_column'
 
 
 def automatizations_checker(element: ElementType):

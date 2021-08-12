@@ -9,14 +9,8 @@ from models.automatizations import (
     DeleteAutomatizationMutation
 )
 
-# Models
-from models.custom_columns import (
-    CreateCustomColumnMutation,
-    CustomColumn,
-    CustomColumnsListsResolver,
-    DeleteCustomColumnnMutation,
-    UpdateCustomColumnMutation
-)
+# Models / mutations / resolvers
+from models.custom_columns import CustomColumn
 
 from models.location import (
     CreateLocationMutation,
@@ -27,16 +21,6 @@ from models.location import (
 )
 
 from models.product import Product
-
-from resolvers.products_filter import ProductsListFilteredResolver
-
-from resolvers.products import (
-    CreateProductMutation,
-    UpdateProductMutation,
-    DeleteProductMutation,
-    ProductsListsResolver,
-)
-
 
 from models.raports import (
     CreateRaportMutation,
@@ -54,9 +38,27 @@ from models.account import (
     Account
 )
 
+# Resolvers / mutations
+from resolvers.products_filter import ProductsListFilteredResolver
+
+from resolvers.products import (
+    CreateProductMutation,
+    UpdateProductMutation,
+    DeleteProductMutation,
+    ProductsListsResolver,
+)
+
+from resolvers.custom_columns import (
+    CreateCustomColumnMutation,
+    CustomColumnsListsResolver,
+    DeleteCustomColumnnMutation,
+    UpdateCustomColumnMutation
+)
+
 from resolvers.authentication import AuthenticationResolvers
 
 from resolvers.integrations import IntegrationsResolvers
+
 
 # Connect with database
 try:
