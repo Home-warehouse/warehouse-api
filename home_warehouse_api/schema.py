@@ -26,14 +26,17 @@ from models.location import (
     Location
 )
 
-from models.product import (
+from models.product import Product
+
+from resolvers.products_filter import ProductsListFilteredResolver
+
+from resolvers.products import (
     CreateProductMutation,
-    ProductsListFilteredResolver,
     UpdateProductMutation,
     DeleteProductMutation,
     ProductsListsResolver,
-    Product
 )
+
 
 from models.raports import (
     CreateRaportMutation,

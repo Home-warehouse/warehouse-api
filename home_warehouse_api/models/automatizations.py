@@ -1,15 +1,12 @@
 import graphene
-from graphene.types.json import JSONString
 
 from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
 
 from mongoengine import Document
-from mongoengine.fields import DictField, GenericReferenceField, ListField, StringField
+from mongoengine.fields import GenericReferenceField, ListField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
-# from models.location import LocationModel
-# from models.product import ProductModel
 from models.raports import RaportModel
 from resolvers.node import CustomNode
 
@@ -39,6 +36,7 @@ class Automatization(MongoengineObjectType):
 
 class elementType(graphene.Enum):
     PRODUCT = 'product'
+    CUSTOM_COLUMN = 'custom_column'
     LOCATION = 'location'
     RAPORT = 'raport'
 
@@ -60,17 +58,12 @@ class AutomatizationInput(graphene.InputObjectType):
     app = graphene.InputField(appType, required=True, description="Integration app used for automatization")
     config = graphene.String(required=True, description="Integration configuration as JSON string")
     element_integrated = graphene.InputField(ElementInput, required=True)
-    elements_monitored = graphene.InputField(graphene.List(elementType),
-                                             required=True, description="One of: 'product', 'localization; ")
+    elements_monitored = graphene.InputField(graphene.List(elementType), required=True)
 
 
 def findElementReference(elementType: str, elementID: str):
     if elementType == "raport":
         return RaportModel.objects(**{"id": elementID})[0]
-    # if elementType == "product":
-    #     return ProductModel.objects(**{"id": elementID})[0]
-    # elif elementType == "location":
-    #     return LocationModel.objects(**{"id": elementID})[0]
 
 
 class CreateAutomatizationMutation(graphene.Mutation):

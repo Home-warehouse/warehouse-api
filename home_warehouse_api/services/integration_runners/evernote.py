@@ -1,4 +1,5 @@
 import graphene
+from resolvers.products_filter import ProductsListFilteredResolver, parseRaportData
 from services.integration_runners.integration import integration
 from services.integrations_apps.evernote import default_note
 
@@ -8,7 +9,7 @@ class EvernoteType(graphene.ObjectType):
 
 
 class evernote(integration):
-    def raport(self, ProductsListFilteredResolver, parseRaportData, **kwargs):
+    def raport(self, **kwargs):
 
         if type(kwargs['integrated_element']['show_custom_columns'][0]) is not str:
             kwargs['integrated_element']['show_custom_columns'] = list(
