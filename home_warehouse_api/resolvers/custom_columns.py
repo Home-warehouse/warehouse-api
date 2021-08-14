@@ -17,6 +17,7 @@ class CreateCustomColumnMutation(graphene.Mutation):
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, custom_column_details=None):
         custom_column = CustomColumnModel(
+            index=custom_column_details.index,
             name=custom_column_details.name,
             elements_allowed=custom_column_details.elements_allowed,
             values=custom_column_details.values,
@@ -28,24 +29,25 @@ class CreateCustomColumnMutation(graphene.Mutation):
 
 
 class UpdateCustomColumnMutation(graphene.Mutation):
-    id = graphene.String(required=True)
-    custom_column = graphene.Field(CustomColumn)
+    custom_columns = graphene.List(CustomColumn)
     modified = graphene.Boolean()
 
     class Arguments:
-        id = graphene.String(required=True)
-        custom_column_details = CustomColumnInput(required=True)
+        input = graphene.List(CustomColumnInput, description="List of custom columns to be updated")
 
     @permissions_checker(PermissionsType(allow_any="user"))
-    def mutate(parent, info, id=None, custom_column_details=None):
-        found_objects = list(CustomColumnModel.objects(**{"id": id}))
-        if len(found_objects) > 0:
-            custom_column_details["id"] = id
-            custom_column = CustomColumnModel(**custom_column_details)
-            custom_column.update(**custom_column_details)
-            automatizations_checker('custom_column')
-            return UpdateCustomColumnMutation(custom_column=custom_column, modified=True)
-        return UpdateCustomColumnMutation(custom_column=id, modified=False)
+    def mutate(parent, info, input=None):
+        custom_columns_output = []
+        for cc in input:
+            found_objects = list(CustomColumnModel.objects(**{"id": cc['id']}))
+            if len(found_objects) > 0:
+                custom_column = CustomColumnModel(**cc)
+                custom_column.update(**cc)
+                custom_columns_output.append(custom_column)
+                automatizations_checker('custom_column')
+            else:
+                return UpdateCustomColumnMutation(custom_columns=None, modified=False)
+        return UpdateCustomColumnMutation(custom_columns=custom_columns_output, modified=True)
 
 
 class DeleteCustomColumnnMutation(graphene.Mutation):

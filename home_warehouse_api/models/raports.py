@@ -13,7 +13,6 @@ from mongoengine.fields import (
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
-# from models.location import LocationModel
 from resolvers.node import CustomNode, EmbeddedNode
 
 # Models
@@ -37,9 +36,7 @@ class RaportModel(Document):
     meta = {"collection": "raports"}
     raport_name = StringField()
     description = StringField()
-    # users = ListField(ReferenceField(AccountModel))
     show_custom_columns = ListField(ReferenceField(CustomColumnModel))
-    # root_location = ReferenceField(LocationModel)
     sort_by = EmbeddedDocumentField(SortRaportModel)
     filter_by = EmbeddedDocumentListField(FilterRaportModel)
     short_results = IntField()
