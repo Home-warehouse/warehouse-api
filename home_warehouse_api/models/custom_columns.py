@@ -4,7 +4,7 @@ from graphene_mongo import MongoengineObjectType
 
 from mongoengine import Document
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import ListField, ReferenceField, StringField
+from mongoengine.fields import IntField, ListField, ReferenceField, StringField
 
 from resolvers.node import CustomNode, EmbeddedNode
 
@@ -14,7 +14,8 @@ from resolvers.node import CustomNode, EmbeddedNode
 class CustomColumnModel(Document):
     '''CustomColumn model for mongoengine'''
     meta = {"collection": "custom_columns"}
-    name = StringField(required=True)
+    name = StringField()
+    index = IntField()
     elements_allowed = ListField(StringField())
     values = ListField(StringField())
     data_type = StringField()
@@ -43,6 +44,16 @@ class CustomColumnValue(MongoengineObjectType):
 
 
 # Graphene Input
+class elementsAllowedType(graphene.Enum):
+    products = 'products'
+    locations = 'locations'
+
+
+class dataTypesType(graphene.Enum):
+    text = 'text'
+    number = 'number'
+    date = 'date'
+    select = 'select'
 
 
 class CustomColumnValueInput(graphene.InputObjectType):
@@ -54,7 +65,8 @@ class CustomColumnValueInput(graphene.InputObjectType):
 class CustomColumnInput(graphene.InputObjectType):
     '''CustomColumn input for graphene'''
     id = graphene.ID()
-    name = graphene.String(required=True)
-    elements_allowed = graphene.List(graphene.String, required=True)
-    values = graphene.List(graphene.String, required=True)
-    data_type = graphene.String(required=True)
+    index = graphene.Int()
+    name = graphene.String()
+    elements_allowed = graphene.InputField(graphene.List(elementsAllowedType))
+    values = graphene.List(graphene.String)
+    data_type = graphene.InputField(dataTypesType)
