@@ -34,7 +34,11 @@ class Automatization(MongoengineObjectType):
 # Mutations
 
 
-class elementType(graphene.Enum):
+class integratedElementType(graphene.Enum):
+    RAPORT = 'raport'
+
+
+class monitoredElementType(graphene.Enum):
     PRODUCT = 'product'
     LOCATION = 'location'
     CUSTOM_COLUMN = 'custom_column'
@@ -46,7 +50,7 @@ class appType(graphene.Enum):
 
 class ElementInput(graphene.InputObjectType):
     '''Element input for graphene'''
-    elementType = graphene.InputField(elementType, required=True)
+    elementType = graphene.InputField(integratedElementType, required=True)
     elementID = graphene.ID(required=True)
 
 
@@ -57,7 +61,7 @@ class AutomatizationInput(graphene.InputObjectType):
     app = graphene.InputField(appType, required=True, description="Integration app used for automatization")
     config = graphene.String(required=True, description="Integration configuration as JSON string")
     element_integrated = graphene.InputField(ElementInput, required=True)
-    elements_monitored = graphene.InputField(graphene.List(elementType), required=True)
+    elements_monitored = graphene.InputField(graphene.List(monitoredElementType), required=True)
 
 
 def findElementReference(elementType: str, elementID: str):
