@@ -5,7 +5,7 @@ from mongoengine import Document
 from mongoengine.fields import EmbeddedDocumentListField, StringField
 
 from models.custom_columns import CustomColumnValueModel
-from resolvers.node import CustomNode
+from node import CustomNode
 
 
 # Models

@@ -1,34 +1,21 @@
 import graphene
 
 
-# TODO: FIX enums to behave like string checkers
-# class sortByEnum(graphene.Enum):
-#     '''Sorting enum'''
-#     ASCENDING = '+'
-#     DESCENDING = '-'
+class filterByType(graphene.Enum):
+    '''FilterBy enum'''
+    EQUAL = '$eq'
+    GREATER = '$gt'
+    LESSER = '$lt'
 
-#     @property
-#     def description(self):
-#         if self == sortByEnum.ASCENDING:
-#             return 'Sort Ascending'
-#         if self == sortByEnum.DESCENDING:
-#             return 'Sort Descending'
+    @property
+    def description(self):
+        if self == filterByType.EQUAL:
+            return 'Comparison returns true if its equal'
+        if self == filterByType.GREATER:
+            return 'Comparison returns true if its greater'
+        if self == filterByType.LESSER:
+            return 'Comparison returns true if its lesser'
 
-
-# class filterByEnum(graphene.Enum):
-#     '''FilterBy enum'''
-#     EQUAL = '$eq'
-#     GREATER = '$gt'
-#     LESSER = '$lt'
-
-#     @property
-#     def description(self):
-#         if self == filterByEnum.EQUAL:
-#             return 'Comparison returns true if its equal'
-#         if self == filterByEnum.GREATER:
-#             return 'Comparison returns true if its greater'
-#         if self == filterByEnum.LESSER:
-#             return 'Comparison returns true if its lesser'
 
 class SortRaportInput(graphene.InputObjectType):
     custom_column = graphene.ID()
@@ -37,7 +24,7 @@ class SortRaportInput(graphene.InputObjectType):
 
 class FilterRaportInput(graphene.InputObjectType):
     custom_column = graphene.ID()
-    comparison = graphene.String()
+    comparison = graphene.InputField(filterByType)
     value = graphene.String()
 
 

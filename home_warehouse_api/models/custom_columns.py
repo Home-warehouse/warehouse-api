@@ -6,7 +6,7 @@ from mongoengine import Document
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import IntField, ListField, ReferenceField, StringField
 
-from resolvers.node import CustomNode, EmbeddedNode
+from node import CustomNode, EmbeddedNode
 
 # Models
 

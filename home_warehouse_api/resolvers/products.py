@@ -13,14 +13,14 @@ from models.product import Product, ProductModel
 class ProductInput(graphene.InputObjectType):
     '''Product input for graphene'''
     id = graphene.ID()
-    product_name = graphene.String(required=True)
+    product_name = graphene.String()
     description = graphene.String()
     icon = graphene.String()
     custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
 
 
 class CreateProductMutation(graphene.Mutation):
-    product = graphene.Field(Product)
+    product = graphene.Field(Product, required=True)
 
     class Arguments:
         product_details = ProductInput(required=True)
@@ -40,8 +40,8 @@ class CreateProductMutation(graphene.Mutation):
 
 class UpdateProductMutation(graphene.Mutation):
     id = graphene.String(required=True)
-    product = graphene.Field(Product)
-    modified = graphene.Boolean()
+    product = graphene.Field(Product, required=True)
+    modified = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.String(required=True)
@@ -61,7 +61,7 @@ class UpdateProductMutation(graphene.Mutation):
 
 class DeleteProductMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)

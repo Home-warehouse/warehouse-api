@@ -13,7 +13,8 @@ from bson import ObjectId
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
 from models.product import ProductModel
-from resolvers.node import CustomNode
+from node import CustomNode
+
 
 # Models
 
@@ -22,10 +23,10 @@ class LocationModel(Document):
     '''Location model for mongoengine'''
     meta = {"collection": "locations"}
     root = BooleanField()
-    location_name = StringField(required=True)
+    location_name = StringField()
     description = StringField()
     products = ListField(ReferenceField(
-        ProductModel, reverse_delete_rule=PULL))
+        'ProductModel', reverse_delete_rule=PULL))
     childrens = ListField(ReferenceField(
         'LocationModel', reverse_delete_rule=PULL))
     custom_columns = ListField(EmbeddedDocumentField(CustomColumnValueModel))
@@ -58,7 +59,7 @@ class LocationInput(graphene.InputObjectType):
 
 
 class CreateLocationMutation(graphene.Mutation):
-    location = graphene.Field(Location)
+    location = graphene.Field(Location, required=True)
 
     class Arguments:
         location_details = LocationInput(required=True)
@@ -80,8 +81,8 @@ class CreateLocationMutation(graphene.Mutation):
 
 class UpdateLocationMutation(graphene.Mutation):
     id = graphene.String(required=True)
-    location = graphene.Field(Location)
-    modified = graphene.Boolean()
+    location = graphene.Field(Location, required=True)
+    modified = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.String(required=True)
@@ -112,7 +113,7 @@ class UpdateLocationMutation(graphene.Mutation):
 
 class DeleteLocationMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)

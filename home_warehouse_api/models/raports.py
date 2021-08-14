@@ -13,7 +13,7 @@ from mongoengine.fields import (
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.common import FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
-from resolvers.node import CustomNode, EmbeddedNode
+from node import CustomNode, EmbeddedNode
 
 # Models
 
@@ -74,20 +74,16 @@ class Raport(MongoengineObjectType):
 class RaportInput(graphene.InputObjectType):
     '''Raport input for graphene'''
     id = graphene.ID()
-    raport_name = graphene.String(required=True)
+    raport_name = graphene.String()
     description = graphene.String()
-    # users = graphene.String()
     show_custom_columns = graphene.List(graphene.ID)
-    # root_location = graphene.ID()
     sort_by = graphene.InputField(SortRaportInput)
     filter_by = graphene.InputField(graphene.List(FilterRaportInput))
     short_results = graphene.Int()
 
 
-# TODO: Check if user has privilages to update - ONLY user[0] can allow new
-# users to access private shared raport
 class CreateRaportMutation(graphene.Mutation):
-    raport = graphene.Field(Raport)
+    raport = graphene.Field(Raport, required=True)
 
     class Arguments:
         raport_details = RaportInput(required=True)
@@ -97,9 +93,7 @@ class CreateRaportMutation(graphene.Mutation):
         raport = RaportModel(
             raport_name=raport_details.raport_name,
             description=raport_details.description,
-            # users=raport_details.users,
             show_custom_columns=raport_details.show_custom_columns,
-            # root_location=raport_details.root_location,
             sort_by=raport_details.sort_by,
             filter_by=raport_details.filter_by,
             short_results=raport_details.short_results
@@ -107,13 +101,11 @@ class CreateRaportMutation(graphene.Mutation):
         raport.save()
         return CreateRaportMutation(raport=raport)
 
-# TODO: Only users[0] of raport can delete raport - even if it is public.
-
 
 class UpdateRaportMutation(graphene.Mutation):
     id = graphene.String(required=True)
-    raport = graphene.Field(Raport)
-    modified = graphene.Boolean()
+    raport = graphene.Field(Raport, required=True)
+    modified = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.String(required=True)
@@ -132,7 +124,7 @@ class UpdateRaportMutation(graphene.Mutation):
 
 class DeleteRaportMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)

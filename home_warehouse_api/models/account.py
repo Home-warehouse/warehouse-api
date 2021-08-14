@@ -1,6 +1,6 @@
 import graphene
 from graphene_mongo.fields import MongoengineConnectionField
-from resolvers.node import CustomNode
+from node import CustomNode
 
 from services.auth import jwt_authorize
 from graphene_mongo import MongoengineObjectType
@@ -47,8 +47,8 @@ class AccountInput(graphene.InputObjectType):
 
 
 class CreateAccountMutation(graphene.Mutation):
-    account = graphene.Field(Account)
-    created = graphene.Boolean()
+    account = graphene.Field(Account, required=True)
+    created = graphene.Boolean(required=True)
 
     class Arguments:
         account_details = AccountInput(required=True)
@@ -71,8 +71,8 @@ class CreateAccountMutation(graphene.Mutation):
 
 
 class UpdateAccountMutation(graphene.Mutation):
-    account = graphene.Field(Account)
-    modified = graphene.Boolean()
+    account = graphene.Field(Account, required=True)
+    modified = graphene.Boolean(required=True)
 
     class Arguments:
         account_details = AccountInput(required=True)
@@ -102,7 +102,7 @@ class UpdateAccountMutation(graphene.Mutation):
 
 
 class DeleteAccountMutation(graphene.Mutation):
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info):

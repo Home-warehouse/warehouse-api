@@ -29,11 +29,11 @@ class CreateCustomColumnMutation(graphene.Mutation):
 
 
 class UpdateCustomColumnMutation(graphene.Mutation):
-    custom_columns = graphene.List(CustomColumn)
-    modified = graphene.Boolean()
+    custom_columns = graphene.List(CustomColumn, required=True)
+    modified = graphene.Boolean(required=True)
 
     class Arguments:
-        input = graphene.List(CustomColumnInput, description="List of custom columns to be updated")
+        input = graphene.List(CustomColumnInput, required=True, description="List of custom columns to be updated")
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, input=None):
@@ -52,7 +52,7 @@ class UpdateCustomColumnMutation(graphene.Mutation):
 
 class DeleteCustomColumnnMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)

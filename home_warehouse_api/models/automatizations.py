@@ -8,7 +8,7 @@ from mongoengine.fields import GenericReferenceField, ListField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.raports import RaportModel
-from resolvers.node import CustomNode
+from node import CustomNode
 
 # Models
 
@@ -57,11 +57,11 @@ class ElementInput(graphene.InputObjectType):
 class AutomatizationInput(graphene.InputObjectType):
     '''Automatization input for graphene'''
     id = graphene.ID()
-    name = graphene.String(required=True, description="Automatization name")
-    app = graphene.InputField(appType, required=True, description="Integration app used for automatization")
-    config = graphene.String(required=True, description="Integration configuration as JSON string")
-    element_integrated = graphene.InputField(ElementInput, required=True)
-    elements_monitored = graphene.InputField(graphene.List(monitoredElementType), required=True)
+    name = graphene.String(description="Automatization name")
+    app = graphene.InputField(appType, description="Integration app used for automatization")
+    config = graphene.String(description="Integration configuration as JSON string")
+    element_integrated = graphene.InputField(ElementInput)
+    elements_monitored = graphene.InputField(graphene.List(monitoredElementType))
 
 
 def findElementReference(elementType: str, elementID: str):
@@ -96,7 +96,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
 
 class DeleteAutomatizationMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)
