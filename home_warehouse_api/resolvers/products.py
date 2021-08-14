@@ -39,24 +39,22 @@ class CreateProductMutation(graphene.Mutation):
 
 
 class UpdateProductMutation(graphene.Mutation):
-    id = graphene.String(required=True)
     product = graphene.Field(Product, required=True)
     modified = graphene.Boolean(required=True)
 
     class Arguments:
-        id = graphene.String(required=True)
         product_details = ProductInput(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
-    def mutate(parent, info, id=None, product_details=None):
-        found_objects = list(ProductModel.objects(**{"id": id}))
+    def mutate(parent, info, product_details=None):
+        found_objects = list(ProductModel.objects(**{"id": product_details['id']}))
         if len(found_objects) > 0:
-            product_details["id"] = id
+            product_details["id"] = product_details['id']
             product = ProductModel(**product_details)
             product.update(**product_details)
             automatizations_checker('product')
             return UpdateProductMutation(product=product, modified=True)
-        return UpdateProductMutation(product=id, modified=False)
+        return UpdateProductMutation(product=product_details['id'], modified=False)
 
 
 class DeleteProductMutation(graphene.Mutation):

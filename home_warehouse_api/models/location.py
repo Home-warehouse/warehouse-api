@@ -80,35 +80,31 @@ class CreateLocationMutation(graphene.Mutation):
 
 
 class UpdateLocationMutation(graphene.Mutation):
-    id = graphene.String(required=True)
     location = graphene.Field(Location, required=True)
     modified = graphene.Boolean(required=True)
 
     class Arguments:
-        id = graphene.String(required=True)
         location_details = LocationInput(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
-    def mutate(parent, info, id=None, location_details=None):
-        found_objects = list(LocationModel.objects(**{"id": id}))
+    def mutate(parent, info, location_details=None):
+        found_objects = list(LocationModel.objects(**{"id": location_details['id']}))
         if len(found_objects) == 1:
             if location_details.products:
-                for index, item in enumerate(location_details.products):
-                    location_details.products[index] = ObjectId(
-                        location_details.products[index])
+                for index in range(len(location_details.products)):
+                    location_details.products[index] = ObjectId(location_details.products[index])
                 location_details.products.extend(found_objects[0].products)
 
             if location_details.childrens:
-                for index, item in enumerate(location_details.childrens):
-                    location_details.childrens[index] = ObjectId(
-                        location_details.childrens[index])
+                for index in range(len(location_details.childrens)):
+                    location_details.childrens[index] = ObjectId(location_details.childrens[index])
                 location_details.childrens.extend(found_objects[0].childrens)
 
-            location_details["id"] = id
+            location_details["id"] = location_details['id']
             location = LocationModel(**location_details)
             location.update(**location_details)
             return UpdateLocationMutation(location=location, modified=True)
-        return UpdateLocationMutation(location=id, modified=False)
+        return UpdateLocationMutation(location=location_details['id'], modified=False)
 
 
 class DeleteLocationMutation(graphene.Mutation):

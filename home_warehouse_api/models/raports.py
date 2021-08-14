@@ -103,23 +103,21 @@ class CreateRaportMutation(graphene.Mutation):
 
 
 class UpdateRaportMutation(graphene.Mutation):
-    id = graphene.String(required=True)
     raport = graphene.Field(Raport, required=True)
     modified = graphene.Boolean(required=True)
 
     class Arguments:
-        id = graphene.String(required=True)
         raport_details = RaportInput(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
-    def mutate(parent, info, id=None, raport_details=None):
-        found_objects = list(RaportModel.objects(**{"id": id}))
+    def mutate(parent, info, raport_details=None):
+        found_objects = list(RaportModel.objects(**{"id": raport_details['id']}))
         if len(found_objects) > 0:
-            raport_details["id"] = id
+            raport_details["id"] = raport_details['id']
             raport = RaportModel(**raport_details)
             raport.update(**raport_details)
             return UpdateRaportMutation(raport=raport, modified=True)
-        return UpdateRaportMutation(raport=id, modified=False)
+        return UpdateRaportMutation(raport=raport_details['id'], modified=False)
 
 
 class DeleteRaportMutation(graphene.Mutation):
