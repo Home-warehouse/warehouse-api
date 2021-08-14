@@ -2,7 +2,7 @@ from enum import Enum
 import json
 
 from models.automatizations import AutomatizationModel
-from services.integration_runners.evernote import evernote
+from services.integrations.evernote import evernote
 
 
 class ElementType(str, Enum):
