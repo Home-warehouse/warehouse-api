@@ -1,36 +1,11 @@
 import graphene
 from graphene_mongo.fields import MongoengineConnectionField
-
 from middlewares.automatizations import automatizations_checker
-
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.common import BuildInputBoilerplate
-from models.custom_columns import CustomColumnValueInput
-from models.product import Product, ProductModel
+from models.product import CreateProductInputType, Product, ProductInputType, ProductModel
 
 
 # Mutations
-
-class ProductInput(graphene.InputObjectType):
-    '''Product input for graphene'''
-    id = graphene.ID()
-
-
-class ProductInput(BuildInputBoilerplate):
-    def BuildInput(self):
-        class Input(graphene.InputObjectType):
-            class Meta:
-                name = self.name
-            id = graphene.ID()
-            product_name = graphene.String(required=self.creating_new)
-            description = graphene.String()
-            icon = graphene.String()
-            custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
-        return Input
-
-
-ProductInputType = ProductInput().BuildInput()
-CreateProductInputType = ProductInput(True).BuildInput()
 
 
 class CreateProductMutation(graphene.Mutation):
@@ -89,6 +64,7 @@ class DeleteProductMutation(graphene.Mutation):
 
 
 # Resolvers
+
 
 class ProductsListsResolver(graphene.ObjectType):
     products_list = MongoengineConnectionField(Product)

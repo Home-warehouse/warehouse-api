@@ -1,13 +1,11 @@
 import graphene
-
 from graphene_mongo import MongoengineObjectType
-
 from mongoengine import Document
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import IntField, ListField, ReferenceField, StringField
 from models.common import BuildInputBoilerplate
-
 from node import CustomNode, EmbeddedNode
+
 
 # Models
 
@@ -29,6 +27,8 @@ class CustomColumnValueModel(EmbeddedDocument):
 
 
 # Types
+
+
 class CustomColumn(MongoengineObjectType):
     '''CustomColumn type for mongoengine'''
 
@@ -44,7 +44,6 @@ class CustomColumnValue(MongoengineObjectType):
         interfaces = (EmbeddedNode, )
 
 
-# Graphene Input
 class elementsAllowedType(graphene.Enum):
     PRODUCTS = 'products'
     LOCATIONS = 'locations'
