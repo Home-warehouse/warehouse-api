@@ -1,12 +1,11 @@
 import graphene
-
 from graphene_mongo import MongoengineObjectType
-
 from mongoengine import Document
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import IntField, ListField, ReferenceField, StringField
+from models.common import BuildInputBoilerplate
+from node import CustomNode, EmbeddedNode
 
-from resolvers.node import CustomNode, EmbeddedNode
 
 # Models
 
@@ -14,7 +13,7 @@ from resolvers.node import CustomNode, EmbeddedNode
 class CustomColumnModel(Document):
     '''CustomColumn model for mongoengine'''
     meta = {"collection": "custom_columns"}
-    name = StringField()
+    custom_column_name = StringField()
     index = IntField()
     elements_allowed = ListField(StringField())
     values = ListField(StringField())
@@ -28,6 +27,8 @@ class CustomColumnValueModel(EmbeddedDocument):
 
 
 # Types
+
+
 class CustomColumn(MongoengineObjectType):
     '''CustomColumn type for mongoengine'''
 
@@ -43,17 +44,16 @@ class CustomColumnValue(MongoengineObjectType):
         interfaces = (EmbeddedNode, )
 
 
-# Graphene Input
 class elementsAllowedType(graphene.Enum):
-    products = 'products'
-    locations = 'locations'
+    PRODUCTS = 'products'
+    LOCATIONS = 'locations'
 
 
 class dataTypesType(graphene.Enum):
-    text = 'text'
-    number = 'number'
-    date = 'date'
-    select = 'select'
+    TEXT = 'text'
+    NUMBER = 'number'
+    DATE = 'date'
+    SELECT = 'select'
 
 
 class CustomColumnValueInput(graphene.InputObjectType):
@@ -62,11 +62,19 @@ class CustomColumnValueInput(graphene.InputObjectType):
     value = graphene.String()
 
 
-class CustomColumnInput(graphene.InputObjectType):
-    '''CustomColumn input for graphene'''
-    id = graphene.ID()
-    index = graphene.Int()
-    name = graphene.String()
-    elements_allowed = graphene.InputField(graphene.List(elementsAllowedType))
-    values = graphene.List(graphene.String)
-    data_type = graphene.InputField(dataTypesType)
+class CustomColumnInput(BuildInputBoilerplate):
+    def BuildInput(self):
+        class Input(graphene.InputObjectType):
+            class Meta:
+                name = self.name
+            id = graphene.ID()
+            index = graphene.Int(required=self.creating_new)
+            custom_column_name = graphene.String(required=self.creating_new)
+            elements_allowed = graphene.InputField(graphene.List(elementsAllowedType), required=self.creating_new)
+            values = graphene.InputField(graphene.List(graphene.String), required=self.creating_new)
+            data_type = graphene.InputField(dataTypesType, required=self.creating_new)
+        return Input
+
+
+CustomColumnInputType = CustomColumnInput().BuildInput()
+CreateCustomColumnInputType = CustomColumnInput(True).BuildInput()

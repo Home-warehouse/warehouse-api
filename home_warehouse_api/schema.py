@@ -1,63 +1,55 @@
 from os import getenv
 import graphene
-
 from mongoengine import connect
 from pymongo.errors import ConnectionFailure
-from models.automatizations import (
-    AutomatizationsListResolver,
-    CreateAutomatizationMutation,
-    DeleteAutomatizationMutation
-)
 
-# Models / mutations / resolvers
-from models.custom_columns import CustomColumn
-
-from models.location import (
-    CreateLocationMutation,
-    LocationsListsResolver,
-    UpdateLocationMutation,
-    DeleteLocationMutation,
-    Location
-)
-
+# Models
+from models.custom_column import CustomColumn
 from models.product import Product
+from models.location import Location
+from models.account import Account
 
-from models.raports import (
+
+# Resolvers / mutations
+from resolvers.raport import (
     CreateRaportMutation,
     DeleteRaportMutation,
     RaportsListsResolver,
     UpdateRaportMutation
 )
-
-from models.account import (
+from resolvers.account import (
     AccountResolvers,
     AccountsListsResolver,
     CreateAccountMutation,
     UpdateAccountMutation,
-    DeleteAccountMutation,
-    Account
+    DeleteAccountMutation
 )
-
-# Resolvers / mutations
-from resolvers.products_filter import ProductsListFilteredResolver
-
-from resolvers.products import (
+from resolvers.automatization import (
+    AutomatizationsListResolver,
+    CreateAutomatizationMutation,
+    DeleteAutomatizationMutation
+)
+from resolvers.location import (
+    CreateLocationMutation,
+    LocationsListsResolver,
+    UpdateLocationMutation,
+    DeleteLocationMutation
+)
+from resolvers.product import (
     CreateProductMutation,
     UpdateProductMutation,
     DeleteProductMutation,
     ProductsListsResolver,
 )
-
-from resolvers.custom_columns import (
+from resolvers.custom_column import (
     CreateCustomColumnMutation,
     CustomColumnsListsResolver,
     DeleteCustomColumnnMutation,
     UpdateCustomColumnMutation
 )
-
+from resolvers.products_filter import ProductsListFilteredResolver
 from resolvers.authentication import AuthenticationResolvers
-
-from resolvers.integrations import IntegrationsResolvers
+from resolvers.integration import IntegrationsResolvers
 
 
 # Connect with database
@@ -76,6 +68,10 @@ except ConnectionFailure as error:
 
 class Mutation(graphene.ObjectType):
     '''Mutations list'''
+    create_product = CreateProductMutation.Field()
+    modify_product = UpdateProductMutation.Field()
+    delete_product = DeleteProductMutation.Field()
+
     create_location = CreateLocationMutation.Field()
     modify_location = UpdateLocationMutation.Field()
     delete_location = DeleteLocationMutation.Field()
@@ -83,10 +79,6 @@ class Mutation(graphene.ObjectType):
     create_custom_column = CreateCustomColumnMutation.Field()
     modify_custom_column = UpdateCustomColumnMutation.Field()
     delete_custom_column = DeleteCustomColumnnMutation.Field()
-
-    create_product = CreateProductMutation.Field()
-    modify_product = UpdateProductMutation.Field()
-    delete_product = DeleteProductMutation.Field()
 
     create_account = CreateAccountMutation.Field()
     modify_account = UpdateAccountMutation.Field()
@@ -119,10 +111,5 @@ class Query(
 
 schema = graphene.Schema(
     query=Query,
-    mutation=Mutation,
-    types=[
-        CustomColumn,
-        Location,
-        Product,
-        Account,
-    ])
+    mutation=Mutation
+    )

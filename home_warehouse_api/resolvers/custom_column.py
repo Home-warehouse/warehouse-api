@@ -1,24 +1,24 @@
 import graphene
-
 from middlewares.automatizations import automatizations_checker
-
 from graphene_mongo.fields import MongoengineConnectionField
-
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.custom_columns import CustomColumn, CustomColumnInput, CustomColumnModel
+from models.custom_column import CreateCustomColumnInputType, CustomColumn, CustomColumnInputType, CustomColumnModel
+
+
+# Mutations
 
 
 class CreateCustomColumnMutation(graphene.Mutation):
     custom_column = graphene.Field(CustomColumn)
 
     class Arguments:
-        custom_column_details = CustomColumnInput(required=True)
+        custom_column_details = CreateCustomColumnInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, custom_column_details=None):
         custom_column = CustomColumnModel(
             index=custom_column_details.index,
-            name=custom_column_details.name,
+            custom_column_name=custom_column_details.custom_column_name,
             elements_allowed=custom_column_details.elements_allowed,
             values=custom_column_details.values,
             data_type=custom_column_details.data_type,
@@ -29,11 +29,11 @@ class CreateCustomColumnMutation(graphene.Mutation):
 
 
 class UpdateCustomColumnMutation(graphene.Mutation):
-    custom_columns = graphene.List(CustomColumn)
-    modified = graphene.Boolean()
+    custom_columns = graphene.List(CustomColumn, required=True)
+    modified = graphene.Boolean(required=True)
 
     class Arguments:
-        input = graphene.List(CustomColumnInput, description="List of custom columns to be updated")
+        input = graphene.List(CustomColumnInputType, required=True, description="List of custom columns to be updated")
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, input=None):
@@ -52,7 +52,7 @@ class UpdateCustomColumnMutation(graphene.Mutation):
 
 class DeleteCustomColumnnMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)
@@ -65,6 +65,7 @@ class DeleteCustomColumnnMutation(graphene.Mutation):
             automatizations_checker('custom_column')
             return DeleteCustomColumnnMutation(id=id, deleted=True)
         return DeleteCustomColumnnMutation(id=id, deleted=False)
+
 
 # Resolvers
 

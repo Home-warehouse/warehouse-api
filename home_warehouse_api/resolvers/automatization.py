@@ -1,67 +1,11 @@
 import graphene
-
-from graphene_mongo import MongoengineObjectType
 from graphene_mongo.fields import MongoengineConnectionField
-
-from mongoengine import Document
-from mongoengine.fields import GenericReferenceField, ListField, StringField
-
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.raports import RaportModel
-from resolvers.node import CustomNode
+from models.automatization import Automatization, AutomatizationModel, CreateAutomatizationInputType
+from models.raport import RaportModel
 
-# Models
-
-
-class AutomatizationModel(Document):
-    '''Automatization model for mongoengine'''
-    meta = {"collection": "automatizations"}
-    app = StringField()
-    name = StringField()
-    config = StringField()
-    element_integrated = GenericReferenceField(choices=[RaportModel])
-    elements_monitored = ListField(StringField())
-
-# Types
-
-
-class Automatization(MongoengineObjectType):
-    '''Automatization type for mongoengine'''
-    class Meta:
-        model = AutomatizationModel
-        interfaces = (CustomNode,)
 
 # Mutations
-
-
-class integratedElementType(graphene.Enum):
-    RAPORT = 'raport'
-
-
-class monitoredElementType(graphene.Enum):
-    PRODUCT = 'product'
-    LOCATION = 'location'
-    CUSTOM_COLUMN = 'custom_column'
-
-
-class appType(graphene.Enum):
-    EVERNOTE = 'evernote'
-
-
-class ElementInput(graphene.InputObjectType):
-    '''Element input for graphene'''
-    elementType = graphene.InputField(integratedElementType, required=True)
-    elementID = graphene.ID(required=True)
-
-
-class AutomatizationInput(graphene.InputObjectType):
-    '''Automatization input for graphene'''
-    id = graphene.ID()
-    name = graphene.String(required=True, description="Automatization name")
-    app = graphene.InputField(appType, required=True, description="Integration app used for automatization")
-    config = graphene.String(required=True, description="Integration configuration as JSON string")
-    element_integrated = graphene.InputField(ElementInput, required=True)
-    elements_monitored = graphene.InputField(graphene.List(monitoredElementType), required=True)
 
 
 def findElementReference(elementType: str, elementID: str):
@@ -73,7 +17,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
     automatization = graphene.Field(Automatization)
 
     class Arguments:
-        automatization_details = AutomatizationInput(required=True)
+        automatization_details = CreateAutomatizationInputType()
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, automatization_details=None):
@@ -85,7 +29,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
 
         automatization = AutomatizationModel(
             app=automatization_details.app,
-            name=automatization_details.name,
+            automatization_name=automatization_details.automatization_name,
             config=automatization_details.config,
             element_integrated=element_integrated,
             elements_monitored=automatization_details.elements_monitored,
@@ -96,7 +40,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
 
 class DeleteAutomatizationMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)
@@ -108,6 +52,7 @@ class DeleteAutomatizationMutation(graphene.Mutation):
             AutomatizationModel.delete(found_objects[0])
             return DeleteAutomatizationMutation(id=id, deleted=True)
         return DeleteAutomatizationMutation(id=id, deleted=False)
+
 
 # Resolvers
 

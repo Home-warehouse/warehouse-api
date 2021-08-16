@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.graphql import GraphQLApp
 from schema import schema
-
 from dotenv import load_dotenv
+
 load_dotenv()
 
 app = FastAPI()
@@ -16,7 +16,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.debug = True
+app.debug = getenv("DEBUG")
 
 app.add_route('/graphql', GraphQLApp(schema))
 

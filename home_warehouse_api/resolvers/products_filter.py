@@ -1,12 +1,13 @@
 import json
 import graphene
 from graphene_mongo.fields import MongoengineConnectionField
-
 from bson.objectid import ObjectId
-
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.common import product_filter_fields
 from models.product import Product, ProductModel
+
+
+# Resolvers
 
 
 class ProductsListFilteredResolver(graphene.ObjectType):

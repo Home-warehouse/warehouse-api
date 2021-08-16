@@ -1,8 +1,10 @@
 import graphene
-
 from models.common import product_filter_fields
 from resolvers.products_filter import ProductsListFilteredResolver, parseRaportData
 from services.integrations.evernote import evernote
+
+
+# Resolvers
 
 
 def raportField(description, type, resolver, **kwargs):

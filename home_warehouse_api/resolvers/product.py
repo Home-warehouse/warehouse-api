@@ -1,29 +1,18 @@
 import graphene
 from graphene_mongo.fields import MongoengineConnectionField
-
 from middlewares.automatizations import automatizations_checker
-
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.custom_columns import CustomColumnValueInput
-from models.product import Product, ProductModel
+from models.product import CreateProductInputType, Product, ProductInputType, ProductModel
 
 
 # Mutations
 
-class ProductInput(graphene.InputObjectType):
-    '''Product input for graphene'''
-    id = graphene.ID()
-    product_name = graphene.String(required=True)
-    description = graphene.String()
-    icon = graphene.String()
-    custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
-
 
 class CreateProductMutation(graphene.Mutation):
-    product = graphene.Field(Product)
+    product = graphene.Field(Product, required=True)
 
     class Arguments:
-        product_details = ProductInput(required=True)
+        product_details = CreateProductInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, product_details=None):
@@ -39,29 +28,27 @@ class CreateProductMutation(graphene.Mutation):
 
 
 class UpdateProductMutation(graphene.Mutation):
-    id = graphene.String(required=True)
-    product = graphene.Field(Product)
-    modified = graphene.Boolean()
+    product = graphene.Field(Product, required=True)
+    modified = graphene.Boolean(required=True)
 
     class Arguments:
-        id = graphene.String(required=True)
-        product_details = ProductInput(required=True)
+        product_details = ProductInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
-    def mutate(parent, info, id=None, product_details=None):
-        found_objects = list(ProductModel.objects(**{"id": id}))
+    def mutate(parent, info, product_details=None):
+        found_objects = list(ProductModel.objects(**{"id": product_details['id']}))
         if len(found_objects) > 0:
-            product_details["id"] = id
+            product_details["id"] = product_details['id']
             product = ProductModel(**product_details)
             product.update(**product_details)
             automatizations_checker('product')
             return UpdateProductMutation(product=product, modified=True)
-        return UpdateProductMutation(product=id, modified=False)
+        return UpdateProductMutation(product=product_details['id'], modified=False)
 
 
 class DeleteProductMutation(graphene.Mutation):
     id = graphene.ID(required=True)
-    deleted = graphene.Boolean()
+    deleted = graphene.Boolean(required=True)
 
     class Arguments:
         id = graphene.ID(required=True)
@@ -77,6 +64,7 @@ class DeleteProductMutation(graphene.Mutation):
 
 
 # Resolvers
+
 
 class ProductsListsResolver(graphene.ObjectType):
     products_list = MongoengineConnectionField(Product)

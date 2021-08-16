@@ -70,7 +70,8 @@ class evernote(integration):
         lines = []
         for parentNode in raportData:
             cc_values = map(
-                lambda parentNode: parentNode['custom_column']['name'] + " : " + parentNode['value'] + " | ",
+                lambda parentNode:
+                    parentNode['custom_column']['custom_column_name'] + " : " + parentNode['value'] + " | ",
                 list(parentNode['custom_columns'])
             )
             product = parentNode['product_name'] + ": "

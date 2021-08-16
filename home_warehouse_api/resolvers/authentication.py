@@ -1,11 +1,12 @@
 import datetime
 import graphene
 from starlette.requests import Request
-
 from models.account import AccountModel
-
 from services.hash_password import verify_password
 from services.auth import jwt_authenticate, jwt_authorize
+
+
+# Resolvers
 
 
 class LoginType(graphene.ObjectType):
