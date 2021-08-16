@@ -4,6 +4,7 @@ from graphene_mongo.fields import MongoengineConnectionField
 from middlewares.automatizations import automatizations_checker
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from models.common import BuildInputBoilerplate
 from models.custom_columns import CustomColumnValueInput
 from models.product import Product, ProductModel
 
@@ -13,17 +14,30 @@ from models.product import Product, ProductModel
 class ProductInput(graphene.InputObjectType):
     '''Product input for graphene'''
     id = graphene.ID()
-    product_name = graphene.String()
-    description = graphene.String()
-    icon = graphene.String()
-    custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
+
+
+class ProductInput(BuildInputBoilerplate):
+    def BuildInput(self):
+        class Input(graphene.InputObjectType):
+            class Meta:
+                name = self.name
+            id = graphene.ID()
+            product_name = graphene.String(required=self.creating_new)
+            description = graphene.String()
+            icon = graphene.String()
+            custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
+        return Input
+
+
+ProductInputType = ProductInput().BuildInput()
+CreateProductInputType = ProductInput(True).BuildInput()
 
 
 class CreateProductMutation(graphene.Mutation):
     product = graphene.Field(Product, required=True)
 
     class Arguments:
-        product_details = ProductInput(required=True)
+        product_details = CreateProductInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, product_details=None):
@@ -43,7 +57,7 @@ class UpdateProductMutation(graphene.Mutation):
     modified = graphene.Boolean(required=True)
 
     class Arguments:
-        product_details = ProductInput(required=True)
+        product_details = ProductInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, product_details=None):

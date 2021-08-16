@@ -11,7 +11,7 @@ from mongoengine.fields import (
 )
 
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.common import FilterRaportInput, SortRaportInput
+from models.common import BuildInputBoilerplate, FilterRaportInput, SortRaportInput
 from models.custom_columns import CustomColumnModel
 from node import CustomNode, EmbeddedNode
 
@@ -70,23 +70,30 @@ class Raport(MongoengineObjectType):
 
 # Mutations
 
+class RaportInput(BuildInputBoilerplate):
+    def BuildInput(self):
+        class Input(graphene.InputObjectType):
+            class Meta:
+                name = self.name
+            id = graphene.ID()
+            raport_name = graphene.String(required=self.creating_new)
+            description = graphene.String(required=self.creating_new)
+            show_custom_columns = graphene.InputField(graphene.List(graphene.ID), required=self.creating_new)
+            sort_by = graphene.InputField(SortRaportInput, required=self.creating_new)
+            filter_by = graphene.InputField(graphene.List(FilterRaportInput), required=self.creating_new)
+            short_results = graphene.Int()
+        return Input
 
-class RaportInput(graphene.InputObjectType):
-    '''Raport input for graphene'''
-    id = graphene.ID()
-    raport_name = graphene.String()
-    description = graphene.String()
-    show_custom_columns = graphene.List(graphene.ID)
-    sort_by = graphene.InputField(SortRaportInput)
-    filter_by = graphene.InputField(graphene.List(FilterRaportInput))
-    short_results = graphene.Int()
+
+RaportInputType = RaportInput().BuildInput()
+CreateRaportInputType = RaportInput(True).BuildInput()
 
 
 class CreateRaportMutation(graphene.Mutation):
     raport = graphene.Field(Raport, required=True)
 
     class Arguments:
-        raport_details = RaportInput(required=True)
+        raport_details = CreateRaportInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, raport_details=None):
@@ -107,7 +114,7 @@ class UpdateRaportMutation(graphene.Mutation):
     modified = graphene.Boolean(required=True)
 
     class Arguments:
-        raport_details = RaportInput(required=True)
+        raport_details = RaportInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, raport_details=None):

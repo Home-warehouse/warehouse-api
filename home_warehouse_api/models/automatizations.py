@@ -7,6 +7,7 @@ from mongoengine import Document
 from mongoengine.fields import GenericReferenceField, ListField, StringField
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from models.common import BuildInputBoilerplate
 from models.raports import RaportModel
 from node import CustomNode
 
@@ -54,14 +55,23 @@ class ElementInput(graphene.InputObjectType):
     elementID = graphene.ID(required=True)
 
 
-class AutomatizationInput(graphene.InputObjectType):
-    '''Automatization input for graphene'''
-    id = graphene.ID()
-    name = graphene.String(description="Automatization name")
-    app = graphene.InputField(appType, description="Integration app used for automatization")
-    config = graphene.String(description="Integration configuration as JSON string")
-    element_integrated = graphene.InputField(ElementInput)
-    elements_monitored = graphene.InputField(graphene.List(monitoredElementType))
+class AutomatizationInput(BuildInputBoilerplate):
+    def BuildInput(self):
+        class Input(graphene.InputObjectType):
+            class Meta:
+                name = self.name
+            id = graphene.ID()
+            name = graphene.String(required=self.creating_new, description="Automatization name")
+            app = graphene.InputField(appType, required=self.creating_new,
+                                      description="Integration app used for automatization")
+            config = graphene.String(required=self.creating_new, description="Integration configuration as JSON string")
+            element_integrated = graphene.InputField(ElementInput, required=self.creating_new)
+            elements_monitored = graphene.InputField(graphene.List(monitoredElementType), required=self.creating_new)
+        return Input
+
+
+AutomatizationInputType = AutomatizationInput().BuildInput()
+CreateAutomatizationInputType = AutomatizationInput(True).BuildInput()
 
 
 def findElementReference(elementType: str, elementID: str):
@@ -73,7 +83,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
     automatization = graphene.Field(Automatization)
 
     class Arguments:
-        automatization_details = AutomatizationInput(required=True)
+        automatization_details = CreateAutomatizationInputType()
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, automatization_details=None):

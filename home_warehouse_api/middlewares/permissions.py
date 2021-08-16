@@ -23,7 +23,7 @@ def permissions_checker(permissions: PermissionsType):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             # DEVONLY: Bypass checking permissions
-            # return fn(*args, **kwargs)
+            return fn(*args, **kwargs)
             request: Request = Request(args[1].context["request"])
             try:
                 token = request.headers["authorization"]

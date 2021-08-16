@@ -5,14 +5,14 @@ from middlewares.automatizations import automatizations_checker
 from graphene_mongo.fields import MongoengineConnectionField
 
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.custom_columns import CustomColumn, CustomColumnInput, CustomColumnModel
+from models.custom_columns import CreateCustomColumnInputType, CustomColumn, CustomColumnInputType, CustomColumnModel
 
 
 class CreateCustomColumnMutation(graphene.Mutation):
     custom_column = graphene.Field(CustomColumn)
 
     class Arguments:
-        custom_column_details = CustomColumnInput(required=True)
+        custom_column_details = CreateCustomColumnInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, custom_column_details=None):
@@ -33,7 +33,7 @@ class UpdateCustomColumnMutation(graphene.Mutation):
     modified = graphene.Boolean(required=True)
 
     class Arguments:
-        input = graphene.List(CustomColumnInput, required=True, description="List of custom columns to be updated")
+        input = graphene.List(CustomColumnInputType, required=True, description="List of custom columns to be updated")
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, input=None):

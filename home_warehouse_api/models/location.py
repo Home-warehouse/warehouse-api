@@ -11,6 +11,7 @@ from mongoengine.queryset.base import PULL
 from bson import ObjectId
 
 from middlewares.permissions import PermissionsType, permissions_checker
+from models.common import BuildInputBoilerplate
 from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
 from models.product import ProductModel
 from node import CustomNode
@@ -47,22 +48,30 @@ class Location(MongoengineObjectType):
 # Mutations
 
 
-class LocationInput(graphene.InputObjectType):
-    '''Location input for graphene'''
-    id = graphene.ID()
-    root = graphene.Boolean()
-    location_name = graphene.String()
-    description = graphene.String()
-    products = graphene.List(graphene.ID)
-    childrens = graphene.List(graphene.ID)
-    custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput))
+class LocationInput(BuildInputBoilerplate):
+    def BuildInput(self):
+        class Input(graphene.InputObjectType):
+            class Meta:
+                name = self.name
+            id = graphene.ID()
+            root = graphene.Boolean()
+            location_name = graphene.String(required=self.creating_new)
+            description = graphene.String(required=self.creating_new)
+            products = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new), required=self.creating_new)
+            childrens = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new), required=self.creating_new)
+            custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput, required=self.creating_new), required=self.creating_new)
+        return Input
+
+
+LocationInputType = LocationInput().BuildInput()
+CreateLocationInputType = LocationInput(True).BuildInput()
 
 
 class CreateLocationMutation(graphene.Mutation):
     location = graphene.Field(Location, required=True)
 
     class Arguments:
-        location_details = LocationInput(required=True)
+        location_details = CreateLocationInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, location_details=None):
@@ -84,7 +93,7 @@ class UpdateLocationMutation(graphene.Mutation):
     modified = graphene.Boolean(required=True)
 
     class Arguments:
-        location_details = LocationInput(required=True)
+        location_details = LocationInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, location_details=None):

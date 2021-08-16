@@ -1,6 +1,24 @@
 import graphene
 
 
+class BuildInputBoilerplate:
+    '''Build InputObjectType for graphene mutations and resolvers'''
+    def __init__(self, creating_new=False):
+        self.name = self.__class__.__name__
+        self.creating_new = creating_new
+        if creating_new:
+            self.name = f'Creating{self.name}'
+
+    def BuildInput(self):
+        class Input(graphene.InputObjectType):
+            # TODO: Assign Meta name to self.name here instead during building input
+            # class Meta:
+            #     name = self.name
+            #     description = ""
+            pass
+        return Input
+
+
 class filterByType(graphene.Enum):
     '''FilterBy enum'''
     EQUAL = '$eq'
