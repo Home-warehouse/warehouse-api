@@ -3,7 +3,7 @@ from graphene_mongo import MongoengineObjectType
 from mongoengine import Document
 from mongoengine.fields import GenericReferenceField, ListField, StringField
 from models.common import BuildInputBoilerplate
-from models.raports import RaportModel
+from models.raport import RaportModel
 from node import CustomNode
 
 
@@ -14,7 +14,7 @@ class AutomatizationModel(Document):
     '''Automatization model for mongoengine'''
     meta = {"collection": "automatizations"}
     app = StringField()
-    name = StringField()
+    automatization_name = StringField()
     config = StringField()
     element_integrated = GenericReferenceField(choices=[RaportModel])
     elements_monitored = ListField(StringField())
@@ -56,7 +56,7 @@ class AutomatizationInput(BuildInputBoilerplate):
             class Meta:
                 name = self.name
             id = graphene.ID()
-            name = graphene.String(required=self.creating_new, description="Automatization name")
+            automatization_name = graphene.String(required=self.creating_new, description="Automatization name")
             app = graphene.InputField(appType, required=self.creating_new,
                                       description="Integration app used for automatization")
             config = graphene.String(required=self.creating_new, description="Integration configuration as JSON string")

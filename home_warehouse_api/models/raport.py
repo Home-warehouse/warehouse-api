@@ -6,7 +6,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField, EmbeddedDocumentListField, IntField,
     ListField, ReferenceField, StringField
 )
-from models.custom_columns import CustomColumnModel
+from models.custom_column import CustomColumnModel
 from node import CustomNode, EmbeddedNode
 from models.common import BuildInputBoilerplate, FilterRaportInput, SortRaportInput
 

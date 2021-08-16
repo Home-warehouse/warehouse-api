@@ -1,8 +1,8 @@
 import graphene
 from graphene_mongo.fields import MongoengineConnectionField
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.automatizations import Automatization, AutomatizationModel, CreateAutomatizationInputType
-from models.raports import RaportModel
+from models.automatization import Automatization, AutomatizationModel, CreateAutomatizationInputType
+from models.raport import RaportModel
 
 
 # Mutations
@@ -29,7 +29,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
 
         automatization = AutomatizationModel(
             app=automatization_details.app,
-            name=automatization_details.name,
+            automatization_name=automatization_details.automatization_name,
             config=automatization_details.config,
             element_integrated=element_integrated,
             elements_monitored=automatization_details.elements_monitored,

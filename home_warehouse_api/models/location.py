@@ -4,7 +4,7 @@ from graphene_mongo import MongoengineObjectType
 from mongoengine import Document
 from mongoengine.fields import BooleanField, EmbeddedDocumentField, ListField, ReferenceField, StringField
 from mongoengine.queryset.base import PULL
-from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
+from models.custom_column import CustomColumnValueInput, CustomColumnValueModel
 from node import CustomNode
 
 
@@ -47,9 +47,12 @@ class LocationInput(BuildInputBoilerplate):
             root = graphene.Boolean()
             location_name = graphene.String(required=self.creating_new)
             description = graphene.String(required=self.creating_new)
-            products = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new), required=self.creating_new)
-            childrens = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new), required=self.creating_new)
-            custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput, required=self.creating_new), required=self.creating_new)
+            products = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new),
+                                           required=self.creating_new)
+            childrens = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new),
+                                            required=self.creating_new)
+            custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput, required=self.creating_new),
+                                                 required=self.creating_new)
         return Input
 
 

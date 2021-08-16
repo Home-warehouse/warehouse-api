@@ -1,17 +1,13 @@
 from functools import wraps
 from starlette.requests import Request
-
 from services.auth import jwt_authorize
-
 from pydantic import BaseModel
-
 from starlette.requests import Request
 from graphql import GraphQLError
 
 ranks = ["user", "admin"]
 
 
-# TODO: Add enum
 class PermissionsType(BaseModel):
     '''Permissions type'''
     allow_any: str = "user"

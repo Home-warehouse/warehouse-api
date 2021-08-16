@@ -4,14 +4,14 @@ from mongoengine import connect
 from pymongo.errors import ConnectionFailure
 
 # Models
-from models.custom_columns import CustomColumn
+from models.custom_column import CustomColumn
 from models.product import Product
 from models.location import Location
 from models.account import Account
 
 
 # Resolvers / mutations
-from resolvers.raports import (
+from resolvers.raport import (
     CreateRaportMutation,
     DeleteRaportMutation,
     RaportsListsResolver,
@@ -24,7 +24,7 @@ from resolvers.account import (
     UpdateAccountMutation,
     DeleteAccountMutation
 )
-from resolvers.automatizations import (
+from resolvers.automatization import (
     AutomatizationsListResolver,
     CreateAutomatizationMutation,
     DeleteAutomatizationMutation
@@ -35,13 +35,13 @@ from resolvers.location import (
     UpdateLocationMutation,
     DeleteLocationMutation
 )
-from resolvers.products import (
+from resolvers.product import (
     CreateProductMutation,
     UpdateProductMutation,
     DeleteProductMutation,
     ProductsListsResolver,
 )
-from resolvers.custom_columns import (
+from resolvers.custom_column import (
     CreateCustomColumnMutation,
     CustomColumnsListsResolver,
     DeleteCustomColumnnMutation,
@@ -49,7 +49,7 @@ from resolvers.custom_columns import (
 )
 from resolvers.products_filter import ProductsListFilteredResolver
 from resolvers.authentication import AuthenticationResolvers
-from resolvers.integrations import IntegrationsResolvers
+from resolvers.integration import IntegrationsResolvers
 
 
 # Connect with database

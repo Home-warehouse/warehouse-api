@@ -2,7 +2,7 @@ import graphene
 from middlewares.automatizations import automatizations_checker
 from graphene_mongo.fields import MongoengineConnectionField
 from middlewares.permissions import PermissionsType, permissions_checker
-from models.custom_columns import CreateCustomColumnInputType, CustomColumn, CustomColumnInputType, CustomColumnModel
+from models.custom_column import CreateCustomColumnInputType, CustomColumn, CustomColumnInputType, CustomColumnModel
 
 
 # Mutations
@@ -18,7 +18,7 @@ class CreateCustomColumnMutation(graphene.Mutation):
     def mutate(parent, info, custom_column_details=None):
         custom_column = CustomColumnModel(
             index=custom_column_details.index,
-            name=custom_column_details.name,
+            custom_column_name=custom_column_details.custom_column_name,
             elements_allowed=custom_column_details.elements_allowed,
             values=custom_column_details.values,
             data_type=custom_column_details.data_type,

@@ -1,7 +1,6 @@
 from enum import Enum
 import json
-
-from models.automatizations import AutomatizationModel
+from models.automatization import AutomatizationModel
 from services.integrations.evernote import evernote
 
 

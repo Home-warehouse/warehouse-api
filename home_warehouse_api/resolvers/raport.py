@@ -1,7 +1,7 @@
 from graphene_mongo.fields import MongoengineConnectionField
 from middlewares.permissions import PermissionsType, permissions_checker
 import graphene
-from models.raports import Raport, RaportInputType, RaportModel, CreateRaportInputType
+from models.raport import Raport, RaportInputType, RaportModel, CreateRaportInputType
 
 
 # Mutations

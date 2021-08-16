@@ -13,7 +13,7 @@ from node import CustomNode, EmbeddedNode
 class CustomColumnModel(Document):
     '''CustomColumn model for mongoengine'''
     meta = {"collection": "custom_columns"}
-    name = StringField()
+    custom_column_name = StringField()
     index = IntField()
     elements_allowed = ListField(StringField())
     values = ListField(StringField())
@@ -69,7 +69,7 @@ class CustomColumnInput(BuildInputBoilerplate):
                 name = self.name
             id = graphene.ID()
             index = graphene.Int(required=self.creating_new)
-            name = graphene.String(required=self.creating_new)
+            custom_column_name = graphene.String(required=self.creating_new)
             elements_allowed = graphene.InputField(graphene.List(elementsAllowedType), required=self.creating_new)
             values = graphene.InputField(graphene.List(graphene.String), required=self.creating_new)
             data_type = graphene.InputField(dataTypesType, required=self.creating_new)

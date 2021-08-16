@@ -3,7 +3,7 @@ from graphene_mongo import MongoengineObjectType
 from mongoengine import Document
 from mongoengine.fields import EmbeddedDocumentListField, StringField
 from models.common import BuildInputBoilerplate
-from models.custom_columns import CustomColumnValueInput, CustomColumnValueModel
+from models.custom_column import CustomColumnValueInput, CustomColumnValueModel
 from node import CustomNode
 
 
