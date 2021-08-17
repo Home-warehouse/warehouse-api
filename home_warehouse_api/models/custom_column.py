@@ -71,10 +71,10 @@ class CustomColumnInput(BuildInputBoilerplate):
             index = graphene.Int(required=self.creating_new)
             custom_column_name = graphene.String(required=self.creating_new)
             elements_allowed = graphene.InputField(graphene.List(elementsAllowedType), required=self.creating_new)
-            values = graphene.InputField(graphene.List(graphene.String), required=self.creating_new)
+            values = graphene.InputField(graphene.List(graphene.String))
             data_type = graphene.InputField(dataTypesType, required=self.creating_new)
         return Input
 
 
 CustomColumnInputType = CustomColumnInput().BuildInput()
-CreateCustomColumnInputType = CustomColumnInput(True).BuildInput()
+CreateCustomColumnInputType = CustomColumnInput(creating_new=True).BuildInput()

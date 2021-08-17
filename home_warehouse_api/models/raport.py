@@ -73,7 +73,7 @@ class RaportInput(BuildInputBoilerplate):
                 name = self.name
             id = graphene.ID()
             raport_name = graphene.String(required=self.creating_new)
-            description = graphene.String(required=self.creating_new)
+            description = graphene.String()
             show_custom_columns = graphene.InputField(graphene.List(graphene.ID), required=self.creating_new)
             sort_by = graphene.InputField(SortRaportInput, required=self.creating_new)
             filter_by = graphene.InputField(graphene.List(FilterRaportInput), required=self.creating_new)
