@@ -46,13 +46,10 @@ class LocationInput(BuildInputBoilerplate):
             id = graphene.ID()
             root = graphene.Boolean()
             location_name = graphene.String(required=self.creating_new)
-            description = graphene.String(required=self.creating_new)
-            products = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new),
-                                           required=self.creating_new)
-            childrens = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new),
-                                            required=self.creating_new)
-            custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput, required=self.creating_new),
-                                                 required=self.creating_new)
+            description = graphene.String()
+            products = graphene.InputField(graphene.List(graphene.ID, required=self.creating_new))
+            childrens = graphene.InputField(graphene.List(graphene.ID,  required=self.creating_new))
+            custom_columns = graphene.InputField(graphene.List(CustomColumnValueInput, required=self.creating_new))
         return Input
 
 
