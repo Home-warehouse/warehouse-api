@@ -12,6 +12,7 @@ from models.product import ProductModel
 
 class CreateLocationMutation(graphene.Mutation):
     location = graphene.Field(Location, required=True)
+    created = graphene.Boolean(required=True)
 
     class Arguments:
         location_details = CreateLocationInputType(required=True)
@@ -28,7 +29,7 @@ class CreateLocationMutation(graphene.Mutation):
         )
         location.save()
 
-        return CreateLocationMutation(location=location)
+        return CreateLocationMutation(location=location, created=True)
 
 
 class UpdateLocationMutation(graphene.Mutation):

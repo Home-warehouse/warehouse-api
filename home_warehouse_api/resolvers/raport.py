@@ -9,6 +9,7 @@ from models.raport import Raport, RaportInputType, RaportModel, CreateRaportInpu
 
 class CreateRaportMutation(graphene.Mutation):
     raport = graphene.Field(Raport, required=True)
+    created = graphene.Boolean(required=True)
 
     class Arguments:
         raport_details = CreateRaportInputType(required=True)
@@ -24,7 +25,7 @@ class CreateRaportMutation(graphene.Mutation):
             short_results=raport_details.short_results
         )
         raport.save()
-        return CreateRaportMutation(raport=raport)
+        return CreateRaportMutation(raport=raport, created=True)
 
 
 class UpdateRaportMutation(graphene.Mutation):

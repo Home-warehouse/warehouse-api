@@ -35,4 +35,13 @@ Without poetry
 #. Copy ``./warehouse-api/.env.prod`` to ``./warehouse-api/.env`` and edit to match your requirements
 #. From repository directory run ``poetry run python home_warehouse_api/main.py``
 
+
+-------
+Testing
+-------
+#. Make sure you have installed API with steps listed before.
+#. While tesiting export path for API files ``export PYTHONPATH=home_warehouse_api``
+#. Run command with poetry ``poetry run pytest`` or without poetry ``pytest``
+
+
 **Take part in development! 😊**

@@ -4,6 +4,7 @@ from graphene_mongo.fields import MongoengineConnectionField
 from bson.objectid import ObjectId
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.common import product_filter_fields
+from models.custom_column import CustomColumnModel
 from models.product import Product, ProductModel
 
 
@@ -67,18 +68,17 @@ class ProductsListFilteredResolver(graphene.ObjectType):
 
 
 class parseRaportData:
-    def __init__(self, CustomColumnModel, ProductModel):
-        self.ProductModel = ProductModel
-        self.CustomColumnModel = CustomColumnModel
+    def __init__(self):
+        pass
 
     def parse_cc(self, cc):
-        cc_details = self.CustomColumnModel.to_json(cc['custom_column'])
+        cc_details = CustomColumnModel.to_json(cc['custom_column'])
         return {"custom_column": json.loads(cc_details), "value": cc['value']}
 
     def parse_product(self, product):
         cc = list(map(lambda cc: self.parse_cc(cc), product['custom_columns']))
         product['custom_columns'] = cc
-        return json.loads(self.ProductModel.to_json(product))
+        return json.loads(ProductModel.to_json(product))
 
     def parseData(self, raportData):
         return list(map(lambda product: self.parse_product(product), raportData))

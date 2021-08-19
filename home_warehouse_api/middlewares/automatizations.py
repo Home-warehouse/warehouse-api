@@ -5,12 +5,13 @@ from services.integrations.evernote import evernote
 
 
 class ElementType(str, Enum):
-    product = 'product'
-    location = 'location'
-    custom_column = 'custom_column'
+    PRODUCT = 'PRODUCT'
+    LOCATION = 'LOCATION'
+    CUSTOM_COLUMN = 'CUSTOM_COLUMN'
 
 
 def automatizations_checker(element: ElementType):
+    print('Running automatization')
     # Check if there is automation saved in DB
     automatizations = list(AutomatizationModel.objects(elements_monitored=element))
     # IF SO -> execute it
@@ -18,5 +19,5 @@ def automatizations_checker(element: ElementType):
         # Get automatization integrations
         integrated_element = json.loads(automatization.element_integrated.to_json())
         if integrated_element["raport_name"]:
-            if automatization["app"] == 'evernote':
+            if automatization["app"] == 'EVERNOTE':
                 evernote(automatization['config']).raport(integrated_element=integrated_element)

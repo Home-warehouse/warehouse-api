@@ -16,7 +16,7 @@ class AutomatizationModel(Document):
     app = StringField()
     automatization_name = StringField()
     config = StringField()
-    element_integrated = GenericReferenceField(choices=[RaportModel])
+    element_integrated = GenericReferenceField(choices=['RaportModel'])
     elements_monitored = ListField(StringField())
 
 

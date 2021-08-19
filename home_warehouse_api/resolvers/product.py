@@ -10,6 +10,7 @@ from models.product import CreateProductInputType, Product, ProductInputType, Pr
 
 class CreateProductMutation(graphene.Mutation):
     product = graphene.Field(Product, required=True)
+    created = graphene.Boolean(required=True)
 
     class Arguments:
         product_details = CreateProductInputType(required=True)
@@ -23,8 +24,8 @@ class CreateProductMutation(graphene.Mutation):
             custom_columns=product_details.custom_columns
         )
         product.save()
-        automatizations_checker('product')
-        return CreateProductMutation(product=product)
+        automatizations_checker('PRODUCT')
+        return CreateProductMutation(product=product, created=True)
 
 
 class UpdateProductMutation(graphene.Mutation):
@@ -41,7 +42,7 @@ class UpdateProductMutation(graphene.Mutation):
             product_details["id"] = product_details['id']
             product = ProductModel(**product_details)
             product.update(**product_details)
-            automatizations_checker('product')
+            automatizations_checker('PRODUCT')
             return UpdateProductMutation(product=product, modified=True)
         return UpdateProductMutation(product=product_details['id'], modified=False)
 
@@ -58,7 +59,7 @@ class DeleteProductMutation(graphene.Mutation):
         found_objects = list(ProductModel.objects(**{"id": id}))
         if len(found_objects) > 0:
             ProductModel.delete(found_objects[0])
-            automatizations_checker('product')
+            automatizations_checker('PRODUCT')
             return DeleteProductMutation(id=id, deleted=True)
         return DeleteProductMutation(id=id, deleted=False)
 

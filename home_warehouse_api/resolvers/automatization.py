@@ -9,15 +9,16 @@ from models.raport import RaportModel
 
 
 def findElementReference(elementType: str, elementID: str):
-    if elementType == "raport":
+    if elementType == "RAPORT":
         return RaportModel.objects(**{"id": elementID})[0]
 
 
 class CreateAutomatizationMutation(graphene.Mutation):
     automatization = graphene.Field(Automatization)
+    created = graphene.Boolean(required=True)
 
     class Arguments:
-        automatization_details = CreateAutomatizationInputType()
+        automatization_details = CreateAutomatizationInputType(required=True)
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def mutate(parent, info, automatization_details=None):
@@ -35,7 +36,7 @@ class CreateAutomatizationMutation(graphene.Mutation):
             elements_monitored=automatization_details.elements_monitored,
         )
         automatization.save()
-        return CreateAutomatizationMutation(automatization=automatization)
+        return CreateAutomatizationMutation(automatization=automatization, created=True)
 
 
 class DeleteAutomatizationMutation(graphene.Mutation):

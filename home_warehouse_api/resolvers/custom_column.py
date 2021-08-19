@@ -10,6 +10,7 @@ from models.custom_column import CreateCustomColumnInputType, CustomColumn, Cust
 
 class CreateCustomColumnMutation(graphene.Mutation):
     custom_column = graphene.Field(CustomColumn)
+    created = graphene.Boolean(required=True)
 
     class Arguments:
         custom_column_details = CreateCustomColumnInputType(required=True)
@@ -25,7 +26,7 @@ class CreateCustomColumnMutation(graphene.Mutation):
         )
         custom_column.save()
         automatizations_checker('custom_column')
-        return CreateCustomColumnMutation(custom_column=custom_column)
+        return CreateCustomColumnMutation(custom_column=custom_column, created=True)
 
 
 class UpdateCustomColumnMutation(graphene.Mutation):

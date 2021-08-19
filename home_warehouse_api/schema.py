@@ -8,6 +8,8 @@ from models.custom_column import CustomColumn
 from models.product import Product
 from models.location import Location
 from models.account import Account
+from models.raport import Raport
+from models.automatization import Automatization
 
 
 # Resolvers / mutations
@@ -111,5 +113,6 @@ class Query(
 
 schema = graphene.Schema(
     query=Query,
-    mutation=Mutation
+    mutation=Mutation,
+    types=[]
     )
