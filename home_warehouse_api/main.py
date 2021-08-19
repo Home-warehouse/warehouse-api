@@ -33,5 +33,5 @@ if __name__ == "__main__":
         host=getenv("API_HOST"),
         port=int(getenv("API_PORT")),
         log_level="info",
-        reload=False
+        reload=getenv("DEBUG")
     )

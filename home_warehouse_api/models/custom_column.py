@@ -45,15 +45,15 @@ class CustomColumnValue(MongoengineObjectType):
 
 
 class elementsAllowedType(graphene.Enum):
-    PRODUCTS = 'products'
-    LOCATIONS = 'locations'
+    PRODUCTS = "PRODUCTS"
+    LOCATIONS = "LOCATIONS"
 
 
 class dataTypesType(graphene.Enum):
-    TEXT = 'text'
-    NUMBER = 'number'
-    DATE = 'date'
-    SELECT = 'select'
+    TEXT = 'TEXT'
+    NUMBER = 'NUMBER'
+    DATE = 'DATE'
+    SELECT = 'SELECT'
 
 
 class CustomColumnValueInput(graphene.InputObjectType):

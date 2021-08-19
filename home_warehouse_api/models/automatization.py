@@ -31,17 +31,17 @@ class Automatization(MongoengineObjectType):
 
 
 class integratedElementType(graphene.Enum):
-    RAPORT = 'raport'
+    RAPORT = 'RAPORT'
 
 
 class monitoredElementType(graphene.Enum):
-    PRODUCT = 'product'
-    LOCATION = 'location'
-    CUSTOM_COLUMN = 'custom_column'
+    PRODUCT = 'PRODUCT'
+    LOCATION = 'LOCATION'
+    CUSTOM_COLUMN = 'CUSTOM_COLUMN'
 
 
 class appType(graphene.Enum):
-    EVERNOTE = 'evernote'
+    EVERNOTE = 'EVERNOTE'
 
 
 class ElementInput(graphene.InputObjectType):
