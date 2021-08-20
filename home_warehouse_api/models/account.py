@@ -36,7 +36,7 @@ class AccountInput(BuildInputBoilerplate):
             class Meta:
                 name = self.name
             id = graphene.ID()
-            new_account = graphene.Boolean(required=self.creating_new)
+            new_account = graphene.Boolean()
             email = graphene.String(required=self.creating_new)
             first_name = graphene.String()
             last_name = graphene.String()

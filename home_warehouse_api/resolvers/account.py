@@ -22,7 +22,11 @@ class CreateAccountMutation(graphene.Mutation):
         found_objects = list(AccountModel.objects(
             **{"email": account_details.email}))
         if len(found_objects) == 0:
-            account_details.update({"password": hash_password(account_details.password)})
+            account_details.update({
+                "new_account": True,
+                "rank": "user",
+                "password": hash_password(account_details.password)
+                })
             account = AccountModel(**account_details)
             account.save()
 
@@ -84,7 +88,7 @@ class DeleteAccountMutation(graphene.Mutation):
 
 
 class AccountsListsResolver(graphene.ObjectType):
-    accounts_list = (Account)
+    accounts_list = MongoengineConnectionField(Account)
 
     @permissions_checker(PermissionsType(allow_any="admin"))
     def resolve_accounts_list(parent, info, *args, **kwargs):
