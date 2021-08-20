@@ -66,22 +66,40 @@ class UpdateAccountMutation(graphene.Mutation):
         return UpdateAccountMutation(account=object_id, modified=False)
 
 
+def deleteOperation(object_id):
+    found_objects = list(AccountModel.objects(
+        **{"id": object_id}))
+
+    if len(found_objects) > 0:
+        AccountModel.delete(found_objects[0])
+        return DeleteAccountMutation(deleted=True)
+    return DeleteAccountMutation(deleted=False)
+
+
+@permissions_checker(PermissionsType(allow_any="user"))
+def deleteOwnAccount(object_id):
+    return deleteOperation(object_id)
+
+
+@permissions_checker(PermissionsType(allow_any="admin"))
+def deleteAnyAccount(object_id):
+    return deleteOperation(object_id)
+
+
 class DeleteAccountMutation(graphene.Mutation):
     deleted = graphene.Boolean(required=True)
 
-    @permissions_checker(PermissionsType(allow_any="user"))
-    def mutate(parent, info):
-        request: Request = Request(info.context["request"])
-        object_id = jwt_authorize(request.headers["authorization"])[
-            "client_id"]
+    class Arguments:
+        id = graphene.ID()
 
-        found_objects = list(AccountModel.objects(
-            **{"id": object_id}))
-
-        if len(found_objects) > 0:
-            AccountModel.delete(found_objects[0])
-            return DeleteAccountMutation(deleted=True)
-        return DeleteAccountMutation(deleted=False)
+    def mutate(parent, info, id=None):
+        if id is None:
+            request: Request = Request(info.context["request"])
+            object_id = jwt_authorize(request.headers["authorization"])[
+                "client_id"]
+            return deleteOwnAccount(object_id)
+        else:
+            return deleteAnyAccount(id)
 
 
 # Resolvers
