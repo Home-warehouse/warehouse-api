@@ -1,7 +1,10 @@
 import graphene
+from os import getenv
 from models.common import product_filter_fields
 from resolvers.products_filter import ProductsListFilteredResolver, parseRaportData
-from services.integrations.evernote import evernote
+
+if getenv("INTEGRATION_EVERNOTE_TOKEN"):
+    from services.integrations.evernote import evernote
 
 
 # Resolvers
@@ -45,4 +48,5 @@ _evernoteRaportResolver = raportField(
 
 
 class IntegrationsResolvers(graphene.ObjectType):
-    evernoteRaportResolver = _evernoteRaportResolver
+    if(getenv("INTEGRATIONN_EVERNOTE_TOKEN")):
+        evernoteRaportResolver = _evernoteRaportResolver

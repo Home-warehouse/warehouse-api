@@ -8,11 +8,9 @@ from services.integrations.integration import integration
 from evernote.api.client import EvernoteClient
 import evernote.edam.type.ttypes as Types
 
-dev_token = getenv("INTEGRATION_EVERNOTE_TOKEN")
-
 
 class default_note:
-    client = EvernoteClient(token=dev_token)
+    client = EvernoteClient(token=getenv("INTEGRATIONN_EVERNOTE_TOKEN"))
     noteStore = client.get_note_store()
     note = Types.Note()
 

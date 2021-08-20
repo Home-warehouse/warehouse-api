@@ -1,7 +1,10 @@
 from enum import Enum
+from os import getenv
 import json
 from models.automatization import AutomatizationModel
-from services.integrations.evernote import evernote
+
+if getenv("INTEGRATION_EVERNOTE_TOKEN"):
+    from services.integrations.evernote import evernote
 
 
 class ElementType(str, Enum):
@@ -20,4 +23,5 @@ def automatizations_checker(element: ElementType):
         integrated_element = json.loads(automatization.element_integrated.to_json())
         if integrated_element["raport_name"]:
             if automatization["app"] == 'EVERNOTE':
-                evernote(automatization['config']).raport(integrated_element=integrated_element)
+                if getenv("INTEGRATION_EVERNOTE_TOKEN"):
+                    evernote(automatization['config']).raport(integrated_element=integrated_element)
