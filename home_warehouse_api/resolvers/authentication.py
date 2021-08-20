@@ -15,6 +15,7 @@ class LoginType(graphene.ObjectType):
     password = graphene.String()
     authenticated = graphene.Boolean()
     access_token = graphene.String()
+    new_account = graphene.Boolean()
 
 
 def resolve_login(parent, info, email, password):
@@ -27,6 +28,8 @@ def resolve_login(parent, info, email, password):
             rank = found_objects[0].rank
             object_id = str(found_objects[0].id)
             token = jwt_authenticate(object_id, rank)
+            if found_objects[0]['new_account']:
+                return LoginType(authenticated=True, access_token=token, new_account=True)
             return LoginType(authenticated=True, access_token=token)
     return LoginType(authenticated=False)
 

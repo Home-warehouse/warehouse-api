@@ -52,6 +52,7 @@ from resolvers.custom_column import (
 from resolvers.products_filter import ProductsListFilteredResolver
 from resolvers.authentication import AuthenticationResolvers
 from resolvers.integration import IntegrationsResolvers
+from services.generate_admin_account import create_admin_account
 
 
 # Connect with database
@@ -63,6 +64,7 @@ try:
     )
     connection = connection.server_info()
     print("Connected with database")
+    create_admin_account()
 except ConnectionFailure as error:
     print("Could not connect with database")
     print(error)

@@ -17,17 +17,17 @@ class CreateAccountMutation(graphene.Mutation):
     class Arguments:
         account_details = CreateAccountInputType(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="admin"))
     def mutate(parent, info, account_details=None):
         found_objects = list(AccountModel.objects(
             **{"email": account_details.email}))
         if len(found_objects) == 0:
-            account = AccountModel(
-                email=account_details.email,
-                first_name=account_details.first_name,
-                last_name=account_details.last_name,
-                password=hash_password(account_details.password),
-                rank="user"
-            )
+            account_details.update({
+                "new_account": True,
+                "rank": "user",
+                "password": hash_password(account_details.password)
+                })
+            account = AccountModel(**account_details)
             account.save()
 
             return CreateAccountMutation(account=account, created=True)
@@ -59,35 +59,54 @@ class UpdateAccountMutation(graphene.Mutation):
                     account_details["password"] = hash_password(account_details.password)
                     print(account_details)
             account_details["id"] = object_id
+            account_details["new_account"] = False
             account = AccountModel(**account_details)
             account.update(**account_details)
             return UpdateAccountMutation(account=account, modified=True)
         return UpdateAccountMutation(account=object_id, modified=False)
 
 
+def deleteOperation(object_id):
+    found_objects = list(AccountModel.objects(
+        **{"id": object_id}))
+
+    if len(found_objects) > 0:
+        AccountModel.delete(found_objects[0])
+        return DeleteAccountMutation(deleted=True)
+    return DeleteAccountMutation(deleted=False)
+
+
+@permissions_checker(PermissionsType(allow_any="user"))
+def deleteOwnAccount(object_id):
+    return deleteOperation(object_id)
+
+
+@permissions_checker(PermissionsType(allow_any="admin"))
+def deleteAnyAccount(object_id):
+    return deleteOperation(object_id)
+
+
 class DeleteAccountMutation(graphene.Mutation):
     deleted = graphene.Boolean(required=True)
 
-    @permissions_checker(PermissionsType(allow_any="user"))
-    def mutate(parent, info):
-        request: Request = Request(info.context["request"])
-        object_id = jwt_authorize(request.headers["authorization"])[
-            "client_id"]
+    class Arguments:
+        id = graphene.ID()
 
-        found_objects = list(AccountModel.objects(
-            **{"id": object_id}))
-
-        if len(found_objects) > 0:
-            AccountModel.delete(found_objects[0])
-            return DeleteAccountMutation(deleted=True)
-        return DeleteAccountMutation(deleted=False)
+    def mutate(parent, info, id=None):
+        if id is None:
+            request: Request = Request(info.context["request"])
+            object_id = jwt_authorize(request.headers["authorization"])[
+                "client_id"]
+            return deleteOwnAccount(object_id)
+        else:
+            return deleteAnyAccount(id)
 
 
 # Resolvers
 
 
 class AccountsListsResolver(graphene.ObjectType):
-    accounts_list = (Account)
+    accounts_list = MongoengineConnectionField(Account)
 
     @permissions_checker(PermissionsType(allow_any="admin"))
     def resolve_accounts_list(parent, info, *args, **kwargs):
