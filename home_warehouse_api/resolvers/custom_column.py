@@ -44,6 +44,7 @@ class UpdateCustomColumnMutation(graphene.Mutation):
             if len(found_objects) > 0:
                 custom_column = CustomColumnModel(**cc)
                 custom_column.update(**cc)
+                custom_column.update(set__values=cc.values)
                 custom_columns_output.append(custom_column)
                 automatizations_checker('custom_column')
             else:
