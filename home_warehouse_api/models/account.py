@@ -3,7 +3,7 @@ from models.common import BuildInputBoilerplate
 from node import CustomNode
 from graphene_mongo import MongoengineObjectType
 from mongoengine import Document
-from mongoengine.fields import StringField
+from mongoengine.fields import BooleanField, StringField
 
 
 # Models
@@ -12,6 +12,7 @@ from mongoengine.fields import StringField
 class AccountModel(Document):
     '''Account model for mongoengine'''
     meta = {"collection": "accounts"}
+    new_account = BooleanField()
     email = StringField()
     first_name = StringField()
     last_name = StringField()
@@ -35,8 +36,9 @@ class AccountInput(BuildInputBoilerplate):
             class Meta:
                 name = self.name
             id = graphene.ID()
+            new_account = graphene.Boolean(required=self.creating_new)
             email = graphene.String(required=self.creating_new)
-            first_name = graphene.String(required=self.creating_new)
+            first_name = graphene.String()
             last_name = graphene.String()
             password = graphene.String(required=self.creating_new)
             rank = graphene.String()

@@ -17,17 +17,13 @@ class CreateAccountMutation(graphene.Mutation):
     class Arguments:
         account_details = CreateAccountInputType(required=True)
 
+    @permissions_checker(PermissionsType(allow_any="admin"))
     def mutate(parent, info, account_details=None):
         found_objects = list(AccountModel.objects(
             **{"email": account_details.email}))
         if len(found_objects) == 0:
-            account = AccountModel(
-                email=account_details.email,
-                first_name=account_details.first_name,
-                last_name=account_details.last_name,
-                password=hash_password(account_details.password),
-                rank="user"
-            )
+            account_details.update({"password": hash_password(account_details.password)})
+            account = AccountModel(**account_details)
             account.save()
 
             return CreateAccountMutation(account=account, created=True)
@@ -59,6 +55,7 @@ class UpdateAccountMutation(graphene.Mutation):
                     account_details["password"] = hash_password(account_details.password)
                     print(account_details)
             account_details["id"] = object_id
+            account_details["new_account"] = False
             account = AccountModel(**account_details)
             account.update(**account_details)
             return UpdateAccountMutation(account=account, modified=True)
