@@ -10,7 +10,7 @@ import evernote.edam.type.ttypes as Types
 
 
 class default_note:
-    client = EvernoteClient(token=getenv("INTEGRATIONN_EVERNOTE_TOKEN"))
+    client = EvernoteClient(token=getenv("INTEGRATION_EVERNOTE_TOKEN"))
     noteStore = client.get_note_store()
     note = Types.Note()
 

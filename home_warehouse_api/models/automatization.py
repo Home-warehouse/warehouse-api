@@ -42,7 +42,7 @@ class monitoredElementType(graphene.Enum):
 
 
 appTypes = [('None', 'None')]
-if getenv("INTEGRATIONN_EVERNOTE_TOKEN"):
+if getenv("INTEGRATION_EVERNOTE_TOKEN"):
     appTypes.append(('EVERNOTE', 'EVERNOTE'))
 
 
