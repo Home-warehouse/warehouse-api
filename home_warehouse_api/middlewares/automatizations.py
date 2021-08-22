@@ -14,7 +14,6 @@ class ElementType(str, Enum):
 
 
 def automatizations_checker(element: ElementType):
-    print('Running automatization')
     # Check if there is automation saved in DB
     automatizations = list(AutomatizationModel.objects(elements_monitored=element))
     # IF SO -> execute it

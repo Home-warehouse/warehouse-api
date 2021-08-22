@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "home-warehouse-api"
-version = "0.2.0"
-description = ""
+version = "0.3.0"
+description = "API for home-warehouse"
 authors = ["Tafeen <taafeenn@gmail.com>"]
 
 [tool.poetry.dependencies]
