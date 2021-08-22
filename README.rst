@@ -1,6 +1,14 @@
-==========================
-Start guide (with docker):
-==========================
+==============
+How to install
+==============
+-----------
+With `docker <https://docs.docker.com/engine/install/>`_
+-----------
+- Linux/macOS - ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) './hw' 5000 5001``
+
+-----------------
+Advanced (docker)
+-----------------
 
 #. Pull API ``git clone https://github.com/Home-warehouse/warehouse-api.git``
 #. Pull UI ``git clone https://github.com/Home-warehouse/warehouse-ui.git``
@@ -9,6 +17,7 @@ Start guide (with docker):
 #. Go to ``./warehouse-api/docker/`` directory and edit .env file
 #. In the same directory run both ``docker-compose build`` and ``docker-compose up -d``
 #. Access HomeWarehouse from web browser under given host
+
 
 ===========
 Development

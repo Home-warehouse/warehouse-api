@@ -6,7 +6,7 @@ services:
     build: ../
     hostname: home-warehouse-api
     ports:
-      - '3000:3000'
+      - ${API_PORT}:3000
     volumes:
       - ${API_DIR}:/usr/src/app/home-warehouse-api/data
     links:
@@ -16,7 +16,7 @@ services:
     restart: always
     build: ../../home-warehouse-ui
     ports:
-      - '80:80'
+      - ${APP_PORT}:80
     links:
       - home-warehouse-api
   mongo:
@@ -24,7 +24,5 @@ services:
     hostname: mongo
     restart: always
     image: mongo
-    ports:
-      - '27017:27017'
     volumes:
       - ${DB_DIR}:/data/db
