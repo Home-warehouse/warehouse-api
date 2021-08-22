@@ -5,7 +5,7 @@ How to install
 With `docker <https://docs.docker.com/engine/install/>`_
 -----------
 - Linux/macOS
-   #. ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) './hw' 5000 5001``
+   #. ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) './hw' localhost 5000 5001``
    #. Login to admin account (email: home-warehouse@mail.com; password: home-warehouse-supervisor) and change account data
 
 -----------------
