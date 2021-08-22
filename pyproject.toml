@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "home-warehouse-api"
-version = "0.2.0"
-description = ""
+version = "0.3.0"
+description = "API for home-warehouse"
 authors = ["Tafeen <taafeenn@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "^0.65.1"
+fastapi = "0.68.0"
 uvicorn = "^0.14.0"
 graphene = "^2.1.8"
 graphene-mongo = "^0.2.13"
