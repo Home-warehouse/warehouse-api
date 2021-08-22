@@ -7,7 +7,7 @@ charset-normalizer==2.0.4; python_full_version >= "3.6.0" and python_version >= 
 click==8.0.1; python_version >= "3.6"
 colorama==0.4.4; python_version >= "3.6" and python_full_version < "3.0.0" and platform_system == "Windows" or platform_system == "Windows" and python_version >= "3.6" and python_full_version >= "3.5.0"
 git+https://github.com/evernote/evernote-sdk-python3.git@e0349a3#egg=evernote3
-fastapi==0.65.1; python_version >= "3.6"
+fastapi==0.68.0; python_version >= "3.6"
 graphene-mongo==0.2.13; python_version >= "2.7"
 graphene==2.1.8
 graphql-core==2.3.2; python_version >= "2.7"
