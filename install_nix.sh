@@ -1,10 +1,10 @@
-
 git clone https://github.com/Home-warehouse/warehouse-api.git home-warehouse-api
 git clone https://github.com/Home-warehouse/warehouse-ui.git home-warehouse-ui
 
 HW_PATH=$1
-API_PORT=$2
-APP_PORT=$3
+API_HOST=$2
+API_PORT=$3
+APP_PORT=$4
 
 # Variables
 JWT_SECRET=$RANDOM
@@ -20,9 +20,9 @@ APP_PORT=$APP_PORT" > home-warehouse-api/docker/.env
 # Update API .env
 printf "DEBUG=False
 DB_URL=mongodb://mongo:27017/home-warehouse
-API_HOST=127.0.0.1
+API_HOST=0.0.0.0
 API_PORT=$API_PORT
-API_ORIGINS=['http://localhost:4200', 'http://localhost:8000']
+API_ORIGINS=['*']
 API_JWT_SECRET=$JWT_SECRET" > home-warehouse-api/.env
 
 if [ ${#EVERNOTE_TOKEN} -gt 0 ]
@@ -36,7 +36,7 @@ fi
 # Update UI .env
 printf "export const environment = {
   production: true,
-  apiIP: '',
+  apiIP: 'http://$API_HOST:$API_PORT/',
   intergrations: [
         {
             name: 'EVERNOTE',
