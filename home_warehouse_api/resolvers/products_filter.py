@@ -8,6 +8,52 @@ from models.custom_column import CustomColumnModel
 from models.product import Product, ProductModel
 
 
+def filter_sort_products(show_custom_columns, filter_by, sort_by, limit=20):
+    parsed_ids_show = list(
+        map(lambda doc: ObjectId(doc), show_custom_columns))
+    parsed_filters = list(
+        map(lambda obj: {"custom_columns.value": {str(obj.comparison): obj.value}}, filter_by))
+
+    pipeline = [
+        # FILTERS
+        {"$match": ({"$and": parsed_filters} if len(
+            parsed_filters) > 0 else {})},
+        # Show custom columns
+        {"$project": {
+            "product_name": True,
+            "description": True,
+            "icon": True,
+            "custom_columns":
+            {"$filter": {
+                "input": "$custom_columns",
+                "as": "cc",
+                "cond": {"$in": ["$$cc.custom_column", parsed_ids_show]}
+            }}
+            }
+            },
+        # SORT
+        {"$addFields": {
+            "order": {
+                "$filter": {
+                    "input": "$custom_columns",
+                    "as": "cc",
+                    "cond": {sort_by['value']:
+                                ["$$cc.custom_column",
+                                ObjectId(sort_by['custom_column'])
+                                ]
+                                }
+                }
+            }
+        }},
+        {"$sort": {"order": int(sort_by['value'])}},
+        {"$project": {"order": False}},
+        # LIMIT
+        {"$limit": limit},
+    ]
+    cursor = ProductModel.objects.aggregate(*pipeline)
+    parsed = list(map(lambda doc: ProductModel._from_son(doc), cursor))
+    return parsed
+
 # Resolvers
 
 
@@ -21,50 +67,7 @@ class ProductsListFilteredResolver(graphene.ObjectType):
 
     @permissions_checker(PermissionsType(allow_any="user"))
     def resolve_filter_sort_products(parent, info, show_custom_columns, filter_by, sort_by, limit=20):
-        parsed_ids_show = list(
-            map(lambda doc: ObjectId(doc), show_custom_columns))
-        parsed_filters = list(
-            map(lambda obj: {"custom_columns.value": {str(obj.comparison): obj.value}}, filter_by))
-
-        pipeline = [
-            # FILTERS
-            {"$match": ({"$and": parsed_filters} if len(
-                parsed_filters) > 0 else {})},
-            # Show custom columns
-            {"$project": {
-             "product_name": True,
-             "description": True,
-             "icon": True,
-             "custom_columns":
-             {"$filter": {
-                 "input": "$custom_columns",
-                 "as": "cc",
-                 "cond": {"$in": ["$$cc.custom_column", parsed_ids_show]}
-             }}
-             }
-             },
-            # SORT
-            {"$addFields": {
-                "order": {
-                    "$filter": {
-                        "input": "$custom_columns",
-                        "as": "cc",
-                        "cond": {sort_by['value']:
-                                 ["$$cc.custom_column",
-                                  ObjectId(sort_by['custom_column'])
-                                  ]
-                                 }
-                    }
-                }
-            }},
-            {"$sort": {"order": int(sort_by['value'])}},
-            {"$project": {"order": False}},
-            # LIMIT
-            {"$limit": limit},
-        ]
-        cursor = ProductModel.objects.aggregate(*pipeline)
-        parsed = list(map(lambda doc: ProductModel._from_son(doc), cursor))
-        return parsed
+        return filter_sort_products(show_custom_columns, filter_by, sort_by, limit)
 
 
 class parseRaportData:

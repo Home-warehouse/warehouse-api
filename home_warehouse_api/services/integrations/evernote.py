@@ -1,7 +1,7 @@
 from os import getenv
 from datetime import datetime
 
-from resolvers.products_filter import ProductsListFilteredResolver, parseRaportData
+from resolvers.products_filter import ProductsListFilteredResolver, parseRaportData, filter_sort_products
 
 from services.integrations.integration import integration
 
@@ -55,9 +55,7 @@ class evernote(integration):
                 'value': kwargs['integrated_element']['sort_by']['value']
             }
 
-        raportData = ProductsListFilteredResolver.resolve_filter_sort_products(
-            parent=None,
-            info=None,
+        raportData = filter_sort_products(
             show_custom_columns=kwargs['integrated_element']['show_custom_columns'],
             filter_by=kwargs['integrated_element']['filter_by'],
             sort_by=kwargs['integrated_element']['sort_by'],

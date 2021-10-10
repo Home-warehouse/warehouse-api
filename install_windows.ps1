@@ -1,7 +1,7 @@
-param([string]$HW_PATH, [string]$API_HOST, [int]$API_PORT, [int]$APP_PORT)
+param([string]$HW_PATH, [string]$HW_VERSION, [string]$API_HOST, [int]$API_PORT, [int]$APP_PORT)
 
-git clone https://github.com/Home-warehouse/warehouse-api.git home-warehouse-api
-git clone https://github.com/Home-warehouse/warehouse-ui.git home-warehouse-ui
+git clone https://github.com/Home-warehouse/warehouse-api.git --depth 1 --branch $HW_VERSION home-warehouse-api
+git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION home-warehouse-ui
 
 # Variables
 $JWT_SECRET = Get-Random
