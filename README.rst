@@ -7,9 +7,9 @@ With `docker <https://docs.docker.com/engine/install/>`_ (recommended)
 ----------------------------------------------------------------------
 - Linux/macOS
 
-   #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) './hw' 'localhost' 5001 5000``
-   #. Go to http://localhost:5000/
-   #. Login to admin account, email: ``home-warehouse@mail.com``; password: ``home-warehouse-supervisor`` and change account data
+  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) './hw' 'localhost' 5001 5000``
+  #. Go to http://localhost:5000/
+  #. Login to admin account, email: ``home-warehouse@mail.com``; password: ``home-warehouse-supervisor`` and change account data
 
 - Windows
 
@@ -25,9 +25,9 @@ With `docker <https://docs.docker.com/engine/install/>`_ (recommended)
 #. Run installation script
 
 --------------------------------
-On host device (Advanced)
+Standalone (Advanced)
 --------------------------------
-  #. Install git, node, python3.9, nginx
+  #. Install git, node, python3.9, nginx, mongoDB
   #. Git clone ``https://github.com/Home-warehouse/warehouse-api`` to 'home-warehouse-api'
   #. Install requirements.txt in 'home-warehouse-api'
   #. Edit home-warehouse-api/.env
