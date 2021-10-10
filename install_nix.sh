@@ -1,10 +1,11 @@
-git clone https://github.com/Home-warehouse/warehouse-api.git home-warehouse-api
-git clone https://github.com/Home-warehouse/warehouse-ui.git home-warehouse-ui
-
 HW_PATH=$1
-API_HOST=$2
-API_PORT=$3
-APP_PORT=$4
+HW_VERSION=$2
+API_HOST=$3
+API_PORT=$4
+APP_PORT=$5
+
+git clone https://github.com/Home-warehouse/warehouse-api.git --depth 1 --branch $HW_VERSION home-warehouse-api
+git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION home-warehouse-ui
 
 # Variables
 JWT_SECRET=$RANDOM
