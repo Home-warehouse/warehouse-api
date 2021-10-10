@@ -27,19 +27,19 @@ With `docker <https://docs.docker.com/engine/install/>`_ (recommended)
 --------------------------------
 Standalone (Advanced)
 --------------------------------
-  #. Install git, node, python3.9, nginx, mongoDB
-  #. Git clone ``https://github.com/Home-warehouse/warehouse-api`` to 'home-warehouse-api'
-  #. Install requirements.txt in 'home-warehouse-api'
-  #. Edit home-warehouse-api/.env
-  #. Run ``python3 home_warehouse_api/main.py``
-  #. Git clone ``https://github.com/Home-warehouse/warehouse-ui`` to 'home-warehouse-ui'
-  #. Edit home-warehouse-ui/environments/environment.prod.ts
-  #. Install dependencies ``npm install``
-  #. Build UI ``npm run build``
-  #. Setup nginx server (example config is in ``home-warehouse-ui/nginx``)
-  #. Move files from ``dist`` directory to nginx hosted files directory
-  #. Go to http://localhost:5000/
-  #. Login to admin account, email: ``home-warehouse@mail.com``; password: ``home-warehouse-supervisor`` and change account data
+#. Install git, node, python3.9, nginx, mongoDB
+#. Git clone ``https://github.com/Home-warehouse/warehouse-api`` to 'home-warehouse-api'
+#. Install requirements.txt in 'home-warehouse-api'
+#. Edit home-warehouse-api/.env
+#. Run ``python3 home_warehouse_api/main.py``
+#. Git clone ``https://github.com/Home-warehouse/warehouse-ui`` to 'home-warehouse-ui'
+#. Edit home-warehouse-ui/environments/environment.prod.ts
+#. Install dependencies ``npm install``
+#. Build UI ``npm run build``
+#. Setup nginx server (example config is in ``home-warehouse-ui/nginx``)
+#. Move files from ``dist`` directory to nginx hosted files directory
+#. Go to http://localhost:5000/
+#. Login to admin account, email: ``home-warehouse@mail.com``; password: ``home-warehouse-supervisor`` and change account data
 
 
 ===========
