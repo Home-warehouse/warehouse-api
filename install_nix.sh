@@ -4,8 +4,10 @@ API_HOST=$3
 API_PORT=$4
 APP_PORT=$5
 
-if [${#HW_VERSION_UI} -eq 0 ]
+if [ -v "$HW_VERSION_UI" ]
 then
+    HW_VERSION_UI = $HW_VERSION_UI
+else 
     HW_VERSION_UI = $HW_VERSION
 fi
 
