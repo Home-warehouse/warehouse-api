@@ -4,8 +4,13 @@ API_HOST=$3
 API_PORT=$4
 APP_PORT=$5
 
+if [${#HW_VERSION_UI} -eq 0 ]
+then
+    HW_VERSION_UI = $HW_VERSION
+fi
+
 git clone https://github.com/Home-warehouse/warehouse-api.git --depth 1 --branch $HW_VERSION home-warehouse-api
-git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION home-warehouse-ui
+git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION_UI home-warehouse-ui
 
 # Variables
 JWT_SECRET=$RANDOM

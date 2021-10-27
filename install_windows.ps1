@@ -1,7 +1,11 @@
 param([string]$HW_PATH, [string]$HW_VERSION, [string]$API_HOST, [int]$API_PORT, [int]$APP_PORT)
 
+if( $HW_VERSION_UI.Length -eq 0 ) {
+    $HW_VERSION_UI = $HW_VERSION
+}
+
 git clone https://github.com/Home-warehouse/warehouse-api.git --depth 1 --branch $HW_VERSION home-warehouse-api
-git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION home-warehouse-ui
+git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION_UI home-warehouse-ui
 
 # Variables
 $JWT_SECRET = Get-Random
