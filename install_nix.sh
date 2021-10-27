@@ -25,7 +25,7 @@ APP_PORT=$APP_PORT" > home-warehouse-api/docker/.env
 
 # Update API .env
 printf "DEBUG=False
-DB_URL=mongodb://mongo:27017/home-warehouse
+DB_URL=mongodb://mongo-home-warehouse:27017/home-warehouse
 API_HOST=0.0.0.0
 API_PORT=$API_PORT
 API_ORIGINS=['*']

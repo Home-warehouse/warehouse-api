@@ -20,7 +20,7 @@ APP_PORT=$APP_PORT" | Out-File -Encoding utf8 -FilePath .\home-warehouse-api\doc
 
 # Update API .env
 "DEBUG=False
-DB_URL=mongodb://mongo:27017/home-warehouse
+DB_URL=mongodb://mongo-home-warehouse:27017/home-warehouse
 API_HOST=0.0.0.0
 API_PORT=$API_PORT
 API_ORIGINS=['*']
