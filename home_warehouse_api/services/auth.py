@@ -1,3 +1,4 @@
+from loguru import logger
 from os import getenv
 from base64 import b64encode
 import datetime
@@ -32,5 +33,5 @@ def jwt_authorize(jwt_token):
         token = jwt.decode(jwt_token, JWT_SECRET_ENCODED, algorithms=["HS256"])
         return token
     except Exception as e:
-        print(e)
+        logger.error(f"Error during checking JWT token {e}")
         return False

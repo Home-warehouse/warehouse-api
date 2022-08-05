@@ -29,7 +29,6 @@ def permissions_checker(permissions: PermissionsType):
                 # Check how ranked user can gain access
                 rank = decoded_token["rank"]
                 user_rank_index = ranks.index(rank)
-                # print("user rank", user_rank_index, "needed rank", ranks.index(permissions.allow_any))
                 if ranks.index(permissions.allow_any) <= user_rank_index:
                     return fn(*args, **kwargs)
                 else:

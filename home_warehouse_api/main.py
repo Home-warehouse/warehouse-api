@@ -1,11 +1,17 @@
+import sys
 from os import getenv
+from dotenv import load_dotenv
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.graphql import GraphQLApp
-from schema import schema
-from dotenv import load_dotenv
+from loguru import logger
 
+logger.remove()
+logger.add(sys.stderr, colorize=True, format = "{level}: {message}")
+
+from schema import schema
 load_dotenv()
 
 app = FastAPI()
@@ -20,7 +26,6 @@ app.debug = getenv("DEBUG")
 
 app.add_route('/graphql', GraphQLApp(schema))
 
-
 @app.get("/")
 def ping():
     '''API ping route for testing'''
@@ -32,6 +37,5 @@ if __name__ == "__main__":
         "main:app",
         host=getenv("API_HOST"),
         port=int(getenv("API_PORT")),
-        log_level="info",
-        reload=getenv("DEBUG")
+        reload=getenv("DEBUG")       
     )
