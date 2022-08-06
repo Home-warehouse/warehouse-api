@@ -1,4 +1,5 @@
 import graphene
+from loguru import logger
 from graphene_mongo.fields import MongoengineConnectionField
 from services.auth import jwt_authorize
 from models.account import Account, AccountInputType, AccountModel, CreateAccountInputType
@@ -57,7 +58,7 @@ class UpdateAccountMutation(graphene.Mutation):
                     return UpdateAccountMutation(account=object_id, modified=False)
                 else:
                     account_details["password"] = hash_password(account_details.password)
-                    print(account_details)
+                    logger.debug(f"Account details: {account_details}")
             account_details["id"] = object_id
             account_details["new_account"] = False
             account = AccountModel(**account_details)

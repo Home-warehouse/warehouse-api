@@ -15,6 +15,7 @@ PyJWT = "^2.1.0"
 python-dotenv = "^0.17.1"
 oauth2 = "^1.9.0"
 evernote3 = {git = "https://github.com/evernote/evernote-sdk-python3.git"}
+loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"

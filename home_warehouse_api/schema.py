@@ -1,3 +1,4 @@
+from loguru import logger
 from os import getenv
 import graphene
 from mongoengine import connect
@@ -52,7 +53,7 @@ from resolvers.custom_column import (
 from resolvers.products_filter import ProductsListFilteredResolver
 from resolvers.authentication import AuthenticationResolvers
 from resolvers.integration import IntegrationsResolvers
-from services.generate_admin_account import create_admin_account
+from services.initial_setup import create_admin_account
 
 
 # Connect with database
@@ -63,11 +64,14 @@ try:
         serverSelectionTimeoutMS=3000
     )
     connection = connection.server_info()
-    print("Connected with database")
+    logger.info("Connected with database")
     create_admin_account()
 except ConnectionFailure as error:
-    print("Could not connect with database")
-    print(error)
+    logger.error(f"""
+    Could not connect with database
+    {error}
+    """)
+    exit()
 
 
 class Mutation(graphene.ObjectType):
