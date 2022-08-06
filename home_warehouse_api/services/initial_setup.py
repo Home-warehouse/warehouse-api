@@ -29,7 +29,7 @@ def create_admin_account():
         Running test env: {testing}
         ---------------------------
         Generating admin account
-        user: admin
+        email: home-warehouse@mail.com
         password: {admin_password}
         Please, change admin password to something else
         because anyone who will have access to this log will be able to login with admin account.
