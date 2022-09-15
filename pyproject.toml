@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "home-warehouse-api"
-version = "0.3.0"
+version = "0.3.4"
 description = "API for home-warehouse"
 authors = ["Tafeen <taafeenn@gmail.com>"]
 

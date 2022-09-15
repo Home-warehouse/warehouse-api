@@ -1,4 +1,4 @@
-param([string]$HW_PATH, [string]$HW_VERSION, [string]$API_HOST, [int]$API_PORT, [int]$APP_PORT)
+param([string]$HW_VERSION, [string]$API_HOST, [int]$API_PORT, [int]$APP_PORT)
 
 if( $HW_VERSION_UI.Length -eq 0 ) {
     $HW_VERSION_UI = $HW_VERSION
@@ -12,9 +12,7 @@ $JWT_SECRET = Get-Random
 $EVERNOTE_INTEGRATED = "true" 
 
 # Updated docker .env
-"API_DIR=$HW_PATH/api
-DB_DIR=$HW_PATH/db
-API_PORT=$API_PORT
+"API_PORT=$API_PORT
 APP_PORT=$APP_PORT" | Out-File -Encoding utf8 -FilePath .\home-warehouse-api\docker\.env
 
 
@@ -46,5 +44,4 @@ if( $EVERNOTE_TOKEN.Length -gt 0 ) {
  };" | Out-File -Encoding utf8 -FilePath .\home-warehouse-ui\src\environments\environment.prod.ts
 
 cd home-warehouse-api/docker
-docker-compose build
-docker-compose up -d
+docker-compose -f docker-compose.default.yml up -d --build

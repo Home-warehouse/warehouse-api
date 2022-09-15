@@ -62,7 +62,7 @@ class UpdateAccountMutation(graphene.Mutation):
             account_details["id"] = object_id
             account_details["new_account"] = False
             account = AccountModel(**account_details)
-            account.update(**account_details)
+            account = account.update(**account_details)
             return UpdateAccountMutation(account=account, modified=True)
         return UpdateAccountMutation(account=object_id, modified=False)
 

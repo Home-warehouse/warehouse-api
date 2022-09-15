@@ -7,14 +7,14 @@ With `docker <https://docs.docker.com/engine/install/>`_ (recommended)
 ----------------------------------------------------------------------
 - Linux/macOS
 
-  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) './hw' 'v0.3.2-alpha' 'localhost' 5001 5000``
+  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) 'v0.3.4-alpha' 'localhost' 5001 5000``
   #. Go to http://localhost:5000/
   #. See home-warehouse logs to copy generated password
   #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
 
 - Windows
 
-  #. Run from PowerShell: ``Invoke-WebRequest https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_windows.ps1 -OutFile .\install_windows.ps1; .\install_windows.ps1 './hw' 'v0.3.2-alpha' 'localhost' 5001 5000``
+  #. Run from PowerShell: ``Invoke-WebRequest https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_windows.ps1 -OutFile .\install_windows.ps1; .\install_windows.ps1 'v0.3.4-alpha' 'localhost' 5001 5000``
   #. Go to http://localhost:5000/
   #. See home-warehouse logs to copy generated password
   #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
