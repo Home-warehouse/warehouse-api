@@ -1,21 +1,21 @@
 [tool.poetry]
 name = "home-warehouse-api"
-version = "0.3.0"
+version = "0.3.4"
 description = "API for home-warehouse"
 authors = ["Tafeen <taafeenn@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "0.68.0"
-uvicorn = "^0.14.0"
-graphene = "^2.1.8"
-graphene-mongo = "^0.2.13"
-bcrypt = "3.1.0"
-PyJWT = "^2.1.0"
+fastapi = "0.85.0"
+uvicorn = {extras = ["standard"], version = "^0.18.3"}
+graphene-mongo = "^0.2.14"
+bcrypt = "4.0.0"
+PyJWT = "^2.4.0"
 python-dotenv = "^0.17.1"
 oauth2 = "^1.9.0"
 evernote3 = {git = "https://github.com/evernote/evernote-sdk-python3.git"}
 loguru = "^0.6.0"
+starlette-graphene3 = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"

@@ -62,7 +62,7 @@ class UpdateAccountMutation(graphene.Mutation):
             account_details["id"] = object_id
             account_details["new_account"] = False
             account = AccountModel(**account_details)
-            account.update(**account_details)
+            account = account.update(**account_details)
             return UpdateAccountMutation(account=account, modified=True)
         return UpdateAccountMutation(account=object_id, modified=False)
 
@@ -131,7 +131,7 @@ def resolve_my_accout(parent, info):
 
 _my_account = graphene.Field(
     description='Get account information about your account',
-    type=MyAccountType,
+    type_=MyAccountType,
     resolver=resolve_my_accout,
     email=graphene.String(default_value=None),
 )

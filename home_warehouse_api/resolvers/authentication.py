@@ -36,7 +36,7 @@ def resolve_login(parent, info, email, password):
 
 _login = graphene.Field(
     description="Get access_token in form of JWT token",
-    type=LoginType,
+    type_=LoginType,
     resolver=resolve_login,
     email=graphene.String(default_value=None),
     password=graphene.String(default_value=None)
@@ -64,7 +64,7 @@ def resolve_refresh_token(parent, info):
 
 _refresh_token = graphene.Field(
     description='Refresh access_token by passing old one in headers as "Authorization" header',
-    type=RefreshTokenType,
+    type_=RefreshTokenType,
     resolver=resolve_refresh_token
 )
 

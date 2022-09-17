@@ -14,7 +14,7 @@ def raportField(description, type, resolver, **kwargs):
     '''Create raport Field for graphene'''
     return graphene.Field(
         description=description,
-        type=type,
+        type_=type,
         resolver=resolver,
         **kwargs
     )

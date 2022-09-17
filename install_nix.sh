@@ -1,8 +1,7 @@
-HW_PATH=$1
-HW_VERSION=$2
-API_HOST=$3
-API_PORT=$4
-APP_PORT=$5
+HW_VERSION=$1
+API_HOST=$2
+API_PORT=$3
+APP_PORT=$4
 
 if ! [ -v "$HW_VERSION_UI" ]
 then
@@ -17,9 +16,7 @@ JWT_SECRET=$RANDOM
 EVERNOTE_INTEGRATED=true
 
 # Updated docker .env
-printf "API_DIR=$HW_PATH/api
-DB_DIR=$HW_PATH/db
-API_PORT=$API_PORT
+printf "API_PORT=$API_PORT
 APP_PORT=$APP_PORT" > home-warehouse-api/docker/.env
 
 
@@ -53,5 +50,4 @@ printf "export const environment = {
 
 
 cd home-warehouse-api/docker
-docker-compose build
-docker-compose up -d
+docker-compose -f docker-compose.default.yml up -d --build

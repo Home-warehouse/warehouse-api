@@ -1,28 +1,39 @@
 version: "3.0"
+
 services:
   home-warehouse-api:
     container_name: home-warehouse-api
-    restart: always
     build: ../
     hostname: home-warehouse-api
     ports:
       - ${API_PORT}:${API_PORT}
     volumes:
-      - ${API_DIR}:/usr/src/app/home-warehouse-api/data
-    links:
-      - mongo-home-warehouse
+      - home_warehose_data:/usr/src/app/home-warehouse-api/data
+    networks:
+      - home_warehouse_fe
+      - home_warehouse_be
+
   home-warehouse-ui:
     container_name: home-warehouse-ui
-    restart: always
     build: ../../home-warehouse-ui
     ports:
       - ${APP_PORT}:80
-    links:
-      - home-warehouse-api
+    networks:
+      - home_warehouse_fe
+
   mongo-home-warehouse:
     container_name: home-warehouse-db
     hostname: mongo-home-warehouse
-    restart: always
-    image: mongo
+    image: mongo:latest
     volumes:
-      - ${DB_DIR}:/data/db
+      - home_warehouse_db:/data/db
+    networks:
+      - home_warehouse_be
+
+networks:
+  home_warehouse_fe:
+  home_warehouse_be:
+
+volumes:
+  home_warehouse_data:
+  home_warehouse_db:

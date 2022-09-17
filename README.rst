@@ -5,19 +5,69 @@ How to install
 ----------------------------------------------------------------------
 With `docker <https://docs.docker.com/engine/install/>`_ (recommended)
 ----------------------------------------------------------------------
+
+-----------------------------
+Installation Scripts (docker)
+-----------------------------
 - Linux/macOS
 
-  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) './hw' 'v0.3.2-alpha' 'localhost' 5001 5000``
+  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) 'v0.3.4-alpha' 'localhost' 5001 5000``
   #. Go to http://localhost:5000/
   #. See home-warehouse logs to copy generated password
   #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
 
 - Windows
 
-  #. Run from PowerShell: ``Invoke-WebRequest https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_windows.ps1 -OutFile .\install_windows.ps1; .\install_windows.ps1 './hw' 'v0.3.2-alpha' 'localhost' 5001 5000``
+  #. Run from PowerShell: ``Invoke-WebRequest https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_windows.ps1 -OutFile .\install_windows.ps1; .\install_windows.ps1 'v0.3.4-alpha' 'localhost' 5001 5000``
   #. Go to http://localhost:5000/
   #. See home-warehouse logs to copy generated password
   #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
+
+--------------
+Docker Compose
+--------------
+::
+  version: "3.0"
+
+  services:
+    home-warehouse-api:
+      container_name: home-warehouse-api
+      image: tafeen/home-warehouse-api:latest
+      hostname: home-warehouse-api
+      ports:
+        - 5000:5000
+      volumes:
+        - home_warehose_data:/usr/src/app/home-warehouse-api/data
+      networks:
+        - home_warehouse_fe
+        - home_warehouse_be
+
+    home-warehouse-ui:
+      container_name: home-warehouse-ui
+      image: tafeen/home-warehouse-ui:latest
+      ports:
+        - 5001:80
+      networks:
+        - home_warehouse_fe
+
+    mongo-home-warehouse:
+      container_name: home-warehouse-db
+      hostname: mongo-home-warehouse
+      image: mongo:latest
+      volumes:
+        - home_warehouse_db:/data/db
+      networks:
+        - home_warehouse_be
+
+  networks:
+    home_warehouse_fe:
+    home_warehouse_be:
+
+  volumes:
+    home_warehouse_data:
+    home_warehouse_db:
+
+
 
 **Use evernote integration**
 
