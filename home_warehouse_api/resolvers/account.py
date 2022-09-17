@@ -131,7 +131,7 @@ def resolve_my_accout(parent, info):
 
 _my_account = graphene.Field(
     description='Get account information about your account',
-    type=MyAccountType,
+    type_=MyAccountType,
     resolver=resolve_my_accout,
     email=graphene.String(default_value=None),
 )
