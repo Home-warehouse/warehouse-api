@@ -1,7 +1,5 @@
 HW_VERSION=$1
 API_HOST=$2
-API_PORT=$3
-APP_PORT=$4
 
 if ! [ -v "$HW_VERSION_UI" ]
 then
@@ -21,10 +19,13 @@ APP_PORT=$APP_PORT" > home-warehouse-api/docker/.env
 
 
 # Update API .env
-printf "DEBUG=False
+printf "PYTHONPATH=./home_warehouse_api
+DEBUG=False
+TEST=False
+MOUNT_APP=True
 DB_URL=mongodb://mongo-home-warehouse:27017/home-warehouse
 API_HOST=0.0.0.0
-API_PORT=$API_PORT
+API_PORT=8000
 API_ORIGINS=['*']
 API_JWT_SECRET=$JWT_SECRET" > home-warehouse-api/.env
 
@@ -38,16 +39,16 @@ fi
 
 # Update UI .env
 printf "export const environment = {
-  production: true,
-  apiIP: 'http://$API_HOST:$API_PORT/',
-  intergrations: [
+    production: true,
+    apiIP: 'api/',
+    intergrations: [
         {
             name: 'EVERNOTE',
-            integrated: $EVERNOTE_INTEGRATED
+            integrated: ${EVERNOTE_INTEGRATED}
         }
     ]
-};" > home-warehouse-ui/src/environments/environment.prod.ts
+ };" > home-warehouse-ui/src/environments/environment.prod.ts
 
 
 cd home-warehouse-api/docker
-docker-compose -f docker-compose.default.yml up -d --build
+docker-compose -f docker-compose.yml up -d --build

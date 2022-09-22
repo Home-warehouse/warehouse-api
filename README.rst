@@ -11,44 +11,35 @@ Installation Scripts (docker)
 -----------------------------
 - Linux/macOS
 
-  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) 'v0.3.4-alpha' 'localhost' 5001 5000``
-  #. Go to http://localhost:5000/
+  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) 'v0.3.4-alpha' 'localhost'``
+  #. Go to http://localhost:8000/
   #. See home-warehouse logs to copy generated password
   #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
 
 - Windows
 
-  #. Run from PowerShell: ``Invoke-WebRequest https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_windows.ps1 -OutFile .\install_windows.ps1; .\install_windows.ps1 'v0.3.4-alpha' 'localhost' 5001 5000``
-  #. Go to http://localhost:5000/
+  #. Run from PowerShell: ``Invoke-WebRequest https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_windows.ps1 -OutFile .\install_windows.ps1; .\install_windows.ps1 'v0.3.4-alpha' 'localhost'``
+  #. Go to http://localhost:8000/
   #. See home-warehouse logs to copy generated password
   #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
 
 --------------
 Docker Compose
 --------------
+1. Create docker-compose.yml file
 ::
   version: "3.0"
-
   services:
-    home-warehouse-api:
-      container_name: home-warehouse-api
-      image: tafeen/home-warehouse-api:latest
-      hostname: home-warehouse-api
+    home-warehouse:
+      container_name: home-warehouse
+      build: 
+        context: ../../
+        dockerfile: home-warehouse-api/dockerfile
+      hostname: home-warehouse
       ports:
-        - 5000:5000
-      volumes:
-        - home_warehose_data:/usr/src/app/home-warehouse-api/data
+        - 8000:8000
       networks:
-        - home_warehouse_fe
         - home_warehouse_be
-
-    home-warehouse-ui:
-      container_name: home-warehouse-ui
-      image: tafeen/home-warehouse-ui:latest
-      ports:
-        - 5001:80
-      networks:
-        - home_warehouse_fe
 
     mongo-home-warehouse:
       container_name: home-warehouse-db
@@ -60,12 +51,14 @@ Docker Compose
         - home_warehouse_be
 
   networks:
-    home_warehouse_fe:
     home_warehouse_be:
 
   volumes:
-    home_warehouse_data:
     home_warehouse_db:
+
+2. Go to http://localhost:8000/
+3. See home-warehouse logs to copy generated password
+4. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
 
 
 
@@ -77,7 +70,7 @@ Docker Compose
 #. Run installation script
 
 --------------------------------
-Standalone (Advanced)
+Standalone - without docker (Advanced)
 --------------------------------
 #. Install git, node, python3.9, nginx, mongoDB
 #. Git clone ``https://github.com/Home-warehouse/warehouse-api`` to 'home-warehouse-api'
@@ -90,7 +83,7 @@ Standalone (Advanced)
 #. Build UI ``npm run build``
 #. Setup nginx server (example config is in ``home-warehouse-ui/nginx``)
 #. Move files from ``dist`` directory to nginx hosted files directory
-#. Go to http://localhost:5000/
+#. Go to http://localhost:8000/
 #. See home-warehouse logs to copy generated password
 #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
 

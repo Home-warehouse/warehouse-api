@@ -3,7 +3,9 @@ version: "3.0"
 services:
   home-warehouse:
     container_name: home-warehouse
-    image: tafeen/home-warehouse:latest
+    build: 
+      context: ../../
+      dockerfile: home-warehouse-api/dockerfile
     hostname: home-warehouse
     ports:
       - 8000:8000
