@@ -26,11 +26,24 @@ jobs:
       -  
         name: Get the tag name
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+      -
+        name: Updated env file
+        run: |
+          JWT_SECRET=$RANDOM
+          printf "PYTHONPATH=./home_warehouse_api
+          DEBUG=False
+          TEST=False
+          MOUNT_APP=True
+          DB_URL=mongodb://mongo-home-warehouse:27017/home-warehouse
+          API_HOST=0.0.0.0
+          API_PORT=8000
+          API_ORIGINS=['*']
+          API_JWT_SECRET=$JWT_SECRET" > home-warehouse-api/.env
       - 
         name: Build and push version
         uses: docker/build-push-action@v3
         with:
-          context: . 
-          file: start.dockerfile
+          context: ../
+          file: home-warehouse-api/dockerfile
           push: true
-          tags: tafeen/home-warehouse-api:latest,tafeen/home-warehouse-api:${{ env.TAG }}
+          tags: tafeen/home-warehouse:latest,tafeen/home-warehouse:${{ env.TAG }}
