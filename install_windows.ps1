@@ -4,8 +4,8 @@ if( $HW_VERSION_UI.Length -eq 0 ) {
     $HW_VERSION_UI = $HW_VERSION
 }
 
-git clone https://github.com/Home-warehouse/warehouse-api.git --depth 1 --branch $HW_VERSION home-warehouse-api
-git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION_UI home-warehouse-ui
+git clone https://github.com/Home-warehouse/warehouse-api.git --depth 1 --branch $HW_VERSION warehouse-api
+git clone https://github.com/Home-warehouse/warehouse-ui.git --depth 1 --branch $HW_VERSION_UI warehouse-ui
 
 # Variables
 $JWT_SECRET = Get-Random
@@ -17,14 +17,14 @@ $EVERNOTE_INTEGRATED = "true"
 DEBUG=False
 TEST=False
 MOUNT_APP=True
-DB_URL=mongodb://mongo-home-warehouse:27017/home-warehouse
+DB_URL=mongodb://home-warehouse-mongo:27017/home-warehouse
 API_HOST=0.0.0.0
 API_PORT=8000
 API_ORIGINS=['*']
-API_JWT_SECRET=$JWT_SECRET" | Out-File -Encoding utf8 -FilePath .\home-warehouse-api\.env
+API_JWT_SECRET=$JWT_SECRET" | Out-File -Encoding utf8 -FilePath .\warehouse-api\.env
 
 if( $EVERNOTE_TOKEN.Length -gt 0 ) {
-    Add-Content -Path .\home-warehouse-api\.env -Value (INTEGRATION_EVERNOTE_TOKEN=$EVERNOTE_TOKEN)
+    Add-Content -Path .\warehouse-api\.env -Value (INTEGRATION_EVERNOTE_TOKEN=$EVERNOTE_TOKEN)
 }else {
     $EVERNOTE_INTEGRATED='false'
 }
@@ -40,7 +40,7 @@ if( $EVERNOTE_TOKEN.Length -gt 0 ) {
             integrated: ${EVERNOTE_INTEGRATED}
         }
     ]
- };" | Out-File -Encoding utf8 -FilePath .\home-warehouse-ui\src\environments\environment.prod.ts
+ };" | Out-File -Encoding utf8 -FilePath .\warehouse-ui\src\environments\environment.prod.ts
 
-cd home-warehouse-api/docker
+cd warehouse-api/docker
 docker-compose -f docker-compose.yml up -d --build

@@ -5,7 +5,7 @@ services:
     container_name: home-warehouse
     build: 
       context: ../../
-      dockerfile: home-warehouse-api/dockerfile
+      dockerfile: warehouse-api/dockerfile
     hostname: home-warehouse
     ports:
       - 8000:8000
