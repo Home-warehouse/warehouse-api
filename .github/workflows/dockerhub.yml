@@ -29,7 +29,6 @@ jobs:
       -
         name: Updated env file
         run: |
-          touch warehouse-api/.env
           JWT_SECRET=$RANDOM
           printf "PYTHONPATH=./home_warehouse_api
           DEBUG=False
@@ -39,7 +38,7 @@ jobs:
           API_HOST=0.0.0.0
           API_PORT=8000
           API_ORIGINS=['*']
-          API_JWT_SECRET=$JWT_SECRET" > warehouse-api/.env
+          API_JWT_SECRET=$JWT_SECRET" > .env
       - 
         name: Build and push version
         uses: docker/build-push-action@v3
