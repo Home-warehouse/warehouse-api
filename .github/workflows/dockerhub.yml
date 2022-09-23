@@ -29,6 +29,7 @@ jobs:
       -
         name: Updated env file
         run: |
+          touch warehouse-api/.env
           JWT_SECRET=$RANDOM
           printf "PYTHONPATH=./home_warehouse_api
           DEBUG=False
