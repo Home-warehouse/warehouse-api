@@ -10,9 +10,9 @@ services:
     networks:
       - home_warehouse_be
 
-  mongo-home-warehouse:
-    container_name: home-warehouse-db
-    hostname: mongo-home-warehouse
+  home-warehouse-mongo:
+    container_name: home-warehouse-mongo
+    hostname: home-warehouse-mongo
     image: mongo:latest
     volumes:
       - home_warehouse_db:/data/db
