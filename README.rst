@@ -5,24 +5,6 @@ How to install
 ----------------------------------------------------------------------
 With `docker <https://docs.docker.com/engine/install/>`_ (recommended)
 ----------------------------------------------------------------------
-
------------------------------
-Installation Scripts (docker)
------------------------------
-- Linux/macOS
-
-  #. Run from terminal: ``bash <(curl -s https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_nix.sh) 'v0.3.4-alpha' 'localhost'``
-  #. Go to http://localhost:8000/
-  #. See home-warehouse logs to copy generated password
-  #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
-
-- Windows
-
-  #. Run from PowerShell: ``Invoke-WebRequest https://raw.githubusercontent.com/Home-warehouse/warehouse-api/master/install_windows.ps1 -OutFile .\install_windows.ps1; .\install_windows.ps1 'v0.3.4-alpha' 'localhost'``
-  #. Go to http://localhost:8000/
-  #. See home-warehouse logs to copy generated password
-  #. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
-
 --------------
 Docker Compose
 --------------
@@ -60,14 +42,6 @@ Docker Compose
 3. See home-warehouse logs to copy generated password
 4. Login to admin account with email: ``home-warehouse@mail.com`` and generated password, after it, it is advised to change account password
 
-
-
-**Use evernote integration**
-
-#. Generate evernote `developer token <https://sandbox.evernote.com/api/DeveloperToken.action>`_
-#. Set generated token as system env var on Linux/macOS: ``export EVERNOTE_TOKEN="<token goes here>"``
-#. Set generated token as system env var on Windows: ``$Env:EVERNOTE_TOKEN="<token goes here>"``
-#. Run installation script
 
 --------------------------------
 Standalone - without docker (Advanced)

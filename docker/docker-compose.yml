@@ -2,19 +2,17 @@ version: "3.0"
 
 services:
   home-warehouse:
-    container_name: home-warehouse
-    build: 
+    container_name: home_warehouse_app
+    build:
       context: ../../
       dockerfile: warehouse-api/dockerfile
-    hostname: home-warehouse
     ports:
       - 8000:8000
     networks:
       - home_warehouse_be
 
-  home-warehouse-mongo:
-    container_name: home-warehouse-db
-    hostname: home-warehouse-mongo
+  mongo:
+    container_name: home_warehouse_db
     image: mongo:latest
     volumes:
       - home_warehouse_db:/data/db

@@ -15,7 +15,7 @@ RUN npm install
 # Copy app files.
 COPY ../warehouse-ui /build_dir
 
-RUN printf "export const environment = { production: true, apiIP: 'api/', intergrations: [ { name: 'EVERNOTE', integrated: false } ] };" > src/environments/environment.prod.ts; npm run build -- --output-path=/build_dir/output
+RUN printf "export const environment = { production: true, apiIP: 'api/' };" > src/environments/environment.prod.ts; npm run build -- --output-path=/build_dir/output
 
 ### Stage 2: serve ###
 FROM python:3.9-alpine3.13

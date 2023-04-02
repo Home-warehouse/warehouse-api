@@ -30,7 +30,8 @@ jobs:
         name: Updated env file
         run: |
           JWT_SECRET=$RANDOM
-          printf "PYTHONPATH=./home_warehouse_api
+          cat << EOF > .env
+          PYTHONPATH=./home_warehouse_api
           DEBUG=False
           TEST=False
           MOUNT_APP=True
@@ -38,7 +39,8 @@ jobs:
           API_HOST=0.0.0.0
           API_PORT=8000
           API_ORIGINS=['*']
-          API_JWT_SECRET=$JWT_SECRET" > .env
+          API_JWT_SECRET=$JWT_SECRET
+          EOF
       - 
         name: Build and push version
         uses: docker/build-push-action@v3

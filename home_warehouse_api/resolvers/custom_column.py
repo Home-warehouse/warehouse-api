@@ -1,5 +1,4 @@
 import graphene
-from middlewares.automatizations import automatizations_checker
 from graphene_mongo.fields import MongoengineConnectionField
 from middlewares.permissions import PermissionsType, permissions_checker
 from models.custom_column import CreateCustomColumnInputType, CustomColumn, CustomColumnInputType, CustomColumnModel
@@ -25,7 +24,6 @@ class CreateCustomColumnMutation(graphene.Mutation):
             data_type=custom_column_details.data_type,
         )
         custom_column.save()
-        automatizations_checker('custom_column')
         return CreateCustomColumnMutation(custom_column=custom_column, created=True)
 
 
@@ -46,7 +44,6 @@ class UpdateCustomColumnMutation(graphene.Mutation):
                 custom_column.update(**cc)
                 custom_column.update(set__values=cc.values)
                 custom_columns_output.append(custom_column)
-                automatizations_checker('custom_column')
             else:
                 return UpdateCustomColumnMutation(custom_columns=None, modified=False)
         return UpdateCustomColumnMutation(custom_columns=custom_columns_output, modified=True)
@@ -64,7 +61,6 @@ class DeleteCustomColumnnMutation(graphene.Mutation):
         found_objects = list(CustomColumnModel.objects(**{"id": id}))
         if len(found_objects) > 0:
             CustomColumnModel.delete(found_objects[0])
-            automatizations_checker('custom_column')
             return DeleteCustomColumnnMutation(id=id, deleted=True)
         return DeleteCustomColumnnMutation(id=id, deleted=False)
 

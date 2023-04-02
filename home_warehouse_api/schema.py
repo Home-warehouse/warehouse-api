@@ -10,7 +10,6 @@ from models.product import Product
 from models.location import Location
 from models.account import Account
 from models.raport import Raport
-from models.automatization import Automatization
 
 
 # Resolvers / mutations
@@ -26,11 +25,6 @@ from resolvers.account import (
     CreateAccountMutation,
     UpdateAccountMutation,
     DeleteAccountMutation
-)
-from resolvers.automatization import (
-    AutomatizationsListResolver,
-    CreateAutomatizationMutation,
-    DeleteAutomatizationMutation
 )
 from resolvers.location import (
     CreateLocationMutation,
@@ -96,9 +90,6 @@ class Mutation(graphene.ObjectType):
     modify_raport = UpdateRaportMutation.Field()
     delete_raport = DeleteRaportMutation.Field()
 
-    create_automatization = CreateAutomatizationMutation.Field()
-    delete_automatization = DeleteAutomatizationMutation.Field()
-
 
 class Query(
     CustomColumnsListsResolver,
@@ -110,7 +101,6 @@ class Query(
     AccountResolvers,
     AuthenticationResolvers,
     IntegrationsResolvers,
-    AutomatizationsListResolver,
     graphene.ObjectType
 ):
     '''Resolvers list'''
